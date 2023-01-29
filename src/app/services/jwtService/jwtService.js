@@ -68,7 +68,7 @@ class JwtService extends FuseUtils.EventEmitter {
           const { data } = response.data;
           if (data.user) {
             this.setSession(data.accessToken);
-            mainAxios.get(urlConfig.)
+
             resolve(data.user);
           } else {
             reject(data.error);
