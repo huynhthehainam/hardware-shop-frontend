@@ -1,7 +1,6 @@
 import FuseUtils from '@fuse/utils/FuseUtils';
-import axios from 'axios';
+import mainAxios, { urlConfig } from 'custom-axios';
 import jwtDecode from 'jwt-decode';
-/* eslint-disable camelcase */
 
 class JwtService extends FuseUtils.EventEmitter {
   init() {
@@ -10,7 +9,7 @@ class JwtService extends FuseUtils.EventEmitter {
   }
 
   setInterceptors = () => {
-    axios.interceptors.response.use(
+    mainAxios.interceptors.response.use(
       (response) => {
         return response;
       },
@@ -28,16 +27,16 @@ class JwtService extends FuseUtils.EventEmitter {
   };
 
   handleAuthentication = () => {
-    const access_token = this.getAccessToken();
+    const accessToken = this.getAccessToken();
 
-    if (!access_token) {
+    if (!accessToken) {
       this.emit('onNoAccessToken');
 
       return;
     }
 
-    if (this.isAuthTokenValid(access_token)) {
-      this.setSession(access_token);
+    if (this.isAuthTokenValid(accessToken)) {
+      this.setSession(accessToken);
       this.emit('onAutoLogin', true);
     } else {
       this.setSession(null);
@@ -47,7 +46,7 @@ class JwtService extends FuseUtils.EventEmitter {
 
   createUser = (data) => {
     return new Promise((resolve, reject) => {
-      axios.post('/api/auth/register', data).then((response) => {
+      mainAxios.post('/api/auth/register', data).then((response) => {
         if (response.data.user) {
           this.setSession(response.data.access_token);
           resolve(response.data.user);
@@ -58,21 +57,21 @@ class JwtService extends FuseUtils.EventEmitter {
     });
   };
 
-  signInWithEmailAndPassword = (email, password) => {
+  signInWithUsernameAndPassword = (username, password) => {
     return new Promise((resolve, reject) => {
-      axios
-        .get('/api/auth', {
-          data: {
-            email,
-            password,
-          },
+      mainAxios
+        .post(urlConfig.login, {
+          username,
+          password,
         })
         .then((response) => {
-          if (response.data.user) {
-            this.setSession(response.data.access_token);
-            resolve(response.data.user);
+          const { data } = response.data;
+          if (data.user) {
+            this.setSession(data.accessToken);
+            mainAxios.get(urlConfig.)
+            resolve(data.user);
           } else {
-            reject(response.data.error);
+            reject(data.error);
           }
         });
     });
@@ -80,7 +79,7 @@ class JwtService extends FuseUtils.EventEmitter {
 
   signInWithToken = () => {
     return new Promise((resolve, reject) => {
-      axios
+      mainAxios
         .get('/api/auth/access-token', {
           data: {
             access_token: this.getAccessToken(),
@@ -103,18 +102,18 @@ class JwtService extends FuseUtils.EventEmitter {
   };
 
   updateUserData = (user) => {
-    return axios.post('/api/auth/user/update', {
+    return mainAxios.post('/api/auth/user/update', {
       user,
     });
   };
 
-  setSession = (access_token) => {
-    if (access_token) {
-      localStorage.setItem('jwt_access_token', access_token);
-      axios.defaults.headers.common.Authorization = `Bearer ${access_token}`;
+  setSession = (accessToken) => {
+    if (accessToken) {
+      localStorage.setItem('jwt_access_token', accessToken);
+      mainAxios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
     } else {
       localStorage.removeItem('jwt_access_token');
-      delete axios.defaults.headers.common.Authorization;
+      delete mainAxios.defaults.headers.common.Authorization;
     }
   };
 
@@ -122,11 +121,11 @@ class JwtService extends FuseUtils.EventEmitter {
     this.setSession(null);
   };
 
-  isAuthTokenValid = (access_token) => {
-    if (!access_token) {
+  isAuthTokenValid = (accessToken) => {
+    if (!accessToken) {
       return false;
     }
-    const decoded = jwtDecode(access_token);
+    const decoded = jwtDecode(accessToken);
     const currentTime = Date.now() / 1000;
     if (decoded.exp < currentTime) {
       console.warn('access token expired');
