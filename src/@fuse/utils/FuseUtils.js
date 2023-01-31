@@ -386,6 +386,19 @@ class FuseUtils {
           return list;
         }, []);
   }
+
+  static convertToStandardError(error) {
+    const standardError = [];
+    const keys = Object.keys(error);
+    keys.forEach((key) => {
+      const messages = error[key];
+      messages.forEach((message) => {
+        standardError.push({ type: key, message });
+      });
+    });
+
+    return standardError;
+  }
 }
 
 export default FuseUtils;

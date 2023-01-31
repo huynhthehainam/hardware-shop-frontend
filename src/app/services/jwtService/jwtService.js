@@ -66,35 +66,54 @@ class JwtService extends FuseUtils.EventEmitter {
         })
         .then((response) => {
           const { data } = response.data;
-          if (data.user) {
-            this.setSession(data.accessToken);
-
-            resolve(data.user);
-          } else {
-            reject(data.error);
-          }
+          this.setSession(data.accessToken);
+          const { user } = data;
+          mainAxios
+            .get(urlConfig.getCurrentUserAvatar, { responseType: 'blob' })
+            .then((getAvatarResponse) => {
+              console.log(getAvatarResponse.data);
+              user.data.photoURL = URL.createObjectURL(getAvatarResponse.data);
+              console.log(user);
+              resolve(user);
+            })
+            .catch((e) => {
+              resolve(data.user);
+            });
+        })
+        .catch((e) => {
+          const { error } = e.response.data;
+          console.log(error);
+          reject(FuseUtils.convertToStandardError(error));
         });
     });
   };
 
   signInWithToken = () => {
     return new Promise((resolve, reject) => {
+      console.log('sign in with token', urlConfig.loginByToken);
       mainAxios
-        .get('/api/auth/access-token', {
-          data: {
-            access_token: this.getAccessToken(),
-          },
+        .post(urlConfig.loginByToken, {
+          token: this.getAccessToken(),
         })
         .then((response) => {
-          if (response.data.user) {
-            this.setSession(response.data.access_token);
-            resolve(response.data.user);
-          } else {
-            this.logout();
-            reject(new Error('Failed to login with token.'));
-          }
+          const { data } = response.data;
+          this.setSession(data.accessToken);
+          const { user } = data;
+          console.log('in in', data, user);
+          mainAxios
+            .get(urlConfig.getCurrentUserAvatar, { responseType: 'blob' })
+            .then((getAvatarResponse) => {
+              console.log(getAvatarResponse.data);
+              user.data.photoURL = URL.createObjectURL(getAvatarResponse.data);
+              console.log(user);
+              resolve(user);
+            })
+            .catch((e) => {
+              resolve(data.user);
+            });
         })
         .catch((error) => {
+          console.log('sing out');
           this.logout();
           reject(new Error('Failed to login with token.'));
         });
