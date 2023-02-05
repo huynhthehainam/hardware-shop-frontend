@@ -399,6 +399,10 @@ class FuseUtils {
 
     return standardError;
   }
+
+  static sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
 }
 
 export default FuseUtils;

@@ -1,10 +1,9 @@
-import { createSlice, createAsyncThunk, createEntityAdapter } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 export const getOrders = createAsyncThunk('eCommerceApp/orders/getOrders', async () => {
   const response = await axios.get('/api/e-commerce-app/orders');
   const data = await response.data;
-
   return data;
 });
 
@@ -17,33 +16,25 @@ export const removeOrders = createAsyncThunk(
   }
 );
 
-const ordersAdapter = createEntityAdapter({});
-
-export const { selectAll: selectOrders, selectById: selectOrderById } = ordersAdapter.getSelectors(
-  (state) => state.eCommerceApp.orders
-);
-
 const ordersSlice = createSlice({
-  name: 'eCommerceApp/orders',
-  initialState: ordersAdapter.getInitialState({
+  name: 'orders',
+
+  initialState: {
+    selectedOrder: null,
     searchText: '',
-  }),
+    orders: [],
+  },
   reducers: {
+    setSelectedOrder: (state, action) => {
+      state.selectedOrder = action.payload;
+    },
     setOrdersSearchText: {
       reducer: (state, action) => {
         state.searchText = action.payload;
       },
-      prepare: (event) => {
-        return { payload: event.target.value || '' };
-      },
     },
-  },
-  extraReducers: {
-    [getOrders.fulfilled]: ordersAdapter.setAll,
-    [removeOrders.fulfilled]: (state, action) => ordersAdapter.removeMany(state, action.payload),
   },
 });
 
-export const { setOrdersSearchText } = ordersSlice.actions;
-
+export const { setSelectedOrder, setOrdersSearchText } = ordersSlice.actions;
 export default ordersSlice.reducer;

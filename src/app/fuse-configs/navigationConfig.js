@@ -5,12 +5,46 @@ import DocumentationNavigation from '../main/documentation/DocumentationNavigati
 import ar from './navigation-i18n/ar';
 import en from './navigation-i18n/en';
 import tr from './navigation-i18n/tr';
+import vi from './navigation-i18n/vi';
 
 i18next.addResourceBundle('en', 'navigation', en);
 i18next.addResourceBundle('tr', 'navigation', tr);
 i18next.addResourceBundle('ar', 'navigation', ar);
+i18next.addResourceBundle('vi', 'navigation', vi);
 
 const navigationConfig = [
+  {
+    id: 'manageOrders',
+    title: 'Manage Orders',
+    translate: 'MANAGE_ORDERS',
+    type: 'collapse',
+    children: [
+      {
+        id: 'orders',
+        title: 'Orders',
+        translate: 'ORDERS',
+        type: 'item',
+        url: '/apps/orders',
+        exact: true,
+      },
+    ],
+  },
+  {
+    id: 'orders',
+    title: 'Orders',
+    translate: 'MANAGE_PRODUCTS',
+    type: 'collapse',
+    children: [
+      {
+        id: 'products',
+        title: 'Products',
+        translate: 'PRODUCTS',
+        type: 'item',
+        url: '/apps/products',
+        exact: true,
+      },
+    ],
+  },
   {
     id: 'applications',
     title: 'Applications',

@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectMainTheme } from 'app/store/fuse/settingsSlice';
 import { useDebounce } from '@fuse/hooks';
 import { useState } from 'react';
-import { setOrdersSearchText } from '../store/ordersSlice';
+import { setOrdersSearchText } from './store/ordersSlice';
 
 function OrdersHeader(props) {
   const dispatch = useDispatch();

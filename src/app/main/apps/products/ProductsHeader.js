@@ -1,3 +1,4 @@
+import Button from '@mui/material/Button';
 import Icon from '@mui/material/Icon';
 import Input from '@mui/material/Input';
 import Paper from '@mui/material/Paper';
@@ -5,20 +6,23 @@ import { ThemeProvider } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { motion } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { selectMainTheme } from 'app/store/fuse/settingsSlice';
 import { useDebounce } from '@fuse/hooks';
-import { useState } from 'react';
-import { setOrdersSearchText } from '../store/ordersSlice';
+import { setProductsSearchText } from './store/productsSlice';
 
-function OrdersHeader(props) {
+function ProductsHeader(props) {
   const dispatch = useDispatch();
-  // const searchText = useSelector(({ eCommerceApp }) => eCommerceApp.orders.searchText);
-  const [searchText, setSearchText] = useState('');
+  const searchText = useSelector((state) => state.products.products.searchText);
   const mainTheme = useSelector(selectMainTheme);
-  const debounce = useDebounce(debounceChange, 500);
-  function debounceChange(ev) {
-    dispatch(setOrdersSearchText(ev));
-  }
+  const debounce = useDebounce((e) => {
+    console.log('search', e.target.value ?? '');
+    // dispatch(getProducts({ search: e.target.value }));
+  }, 500);
+  const handleSearchChanged = (ev) => {
+    dispatch(setProductsSearchText(ev.target.value ?? ''));
+    debounce(ev);
+  };
   return (
     <div className="flex flex-1 w-full items-center justify-between">
       <div className="flex items-center">
@@ -28,16 +32,16 @@ function OrdersHeader(props) {
           animate={{ scale: 1, transition: { delay: 0.2 } }}
           className="text-24 md:text-32"
         >
-          receipt
+          shopping_basket
         </Icon>
         <Typography
           component={motion.span}
           initial={{ x: -20 }}
           animate={{ x: 0, transition: { delay: 0.2 } }}
           delay={300}
-          className="text-16 md:text-24 mx-12 font-semibold"
+          className="hidden sm:flex text-16 md:text-24 mx-12 font-semibold"
         >
-          Orders
+          Products
         </Typography>
       </div>
 
@@ -60,16 +64,28 @@ function OrdersHeader(props) {
               inputProps={{
                 'aria-label': 'Search',
               }}
-              onChange={(ev) => {
-                setSearchText(ev.target.value);
-                debounce(ev);
-              }}
+              onChange={(ev) => handleSearchChanged(ev)}
             />
           </Paper>
         </ThemeProvider>
       </div>
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}
+      >
+        <Button
+          component={Link}
+          to="/apps/e-commerce/products/new"
+          className="whitespace-nowrap"
+          variant="contained"
+          color="secondary"
+        >
+          <span className="hidden sm:flex">Add New Product</span>
+          <span className="flex sm:hidden">New</span>
+        </Button>
+      </motion.div>
     </div>
   );
 }
 
-export default OrdersHeader;
+export default ProductsHeader;

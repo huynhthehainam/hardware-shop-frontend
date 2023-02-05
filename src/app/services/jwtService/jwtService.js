@@ -73,7 +73,7 @@ class JwtService extends FuseUtils.EventEmitter {
             .then((getAvatarResponse) => {
               console.log(getAvatarResponse.data);
               user.data.photoURL = URL.createObjectURL(getAvatarResponse.data);
-              console.log(user);
+              this.convertRole(user);
               resolve(user);
             })
             .catch((e) => {
@@ -88,9 +88,18 @@ class JwtService extends FuseUtils.EventEmitter {
     });
   };
 
+  convertRole = (user) => {
+    user.role = [user.role.toLowerCase()];
+    if (user.shop) {
+      user.role = [...user.role, `shop-${user.shop.role.toLowerCase()}`];
+    }
+
+    return user;
+  };
+
   signInWithToken = () => {
     return new Promise((resolve, reject) => {
-      console.log('sign in with token', urlConfig.loginByToken);
+      console.log('sign in with token', this.getAccessToken());
       mainAxios
         .post(urlConfig.loginByToken, {
           token: this.getAccessToken(),
@@ -98,7 +107,7 @@ class JwtService extends FuseUtils.EventEmitter {
         .then((response) => {
           const { data } = response.data;
           this.setSession(data.accessToken);
-          const { user } = data;
+          let { user } = data;
           console.log('in in', data, user);
           mainAxios
             .get(urlConfig.getCurrentUserAvatar, { responseType: 'blob' })
@@ -106,6 +115,7 @@ class JwtService extends FuseUtils.EventEmitter {
               console.log(getAvatarResponse.data);
               user.data.photoURL = URL.createObjectURL(getAvatarResponse.data);
               console.log(user);
+              user = this.convertRole(user);
               resolve(user);
             })
             .catch((e) => {
