@@ -2,56 +2,52 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import mainAxios, { urlConfig } from 'custom-axios';
 
 export const getProducts = createAsyncThunk(
-  'products/getProducts',
-  ({ search }, { dispatch, getState }) => {
-    console.log('get products', search);
+  'products/products/getProducts',
+  (params, { dispatch, getState }) => {
+    const { searchText, page, rowsPerPage } = getState().products.products;
+
     return new Promise((resolve, reject) => {
       mainAxios
         .get(urlConfig.getProducts, {
           params: {
-            search,
+            search: searchText,
+            pageIndex: page,
+            pageSize: rowsPerPage,
           },
         })
         .then((response) => {
-          const thumbnails = [];
-          for (const item of response.data.data) {
-            thumbnails.push({
-              id: item.id,
-              url: null,
-            });
-            item.images = [];
+          response.data.data.forEach((item) => {
+            item.image = null;
             item.categories = item.productCategoryNames;
-          }
-          console.log('finish', response.data.data);
-          dispatch(setThumbnails(thumbnails));
+          });
           dispatch(setProducts(response.data.data));
+          dispatch(getThumbnails());
+          dispatch(setTotalRecords(response.data.totalItems));
           resolve(response.data.data);
         });
     });
   }
 );
 export const getThumbnails = createAsyncThunk(
-  'products/getThumbnails',
+  'products/products/getThumbnails',
   (params, { dispatch, getState }) => {
     return new Promise((resolve, reject) => {
-      const { thumbnails } = getState().products.products;
-      const promises = thumbnails.map(
+      const { products } = getState().products.products;
+      const promises = products.map(
         (item, index) =>
           new Promise((thumbnailResolve) => {
+            const newItem = { ...item };
             const url = urlConfig.getProductThumbnail(item.id);
             mainAxios.get(url, { responseType: 'blob' }).then((response) => {
               const { data } = response;
               const blobUrl = URL.createObjectURL(data);
-
-              thumbnailResolve({
-                index,
-                url: blobUrl,
-              });
+              newItem.image = blobUrl;
+              thumbnailResolve(newItem);
             });
           })
       );
       Promise.all(promises).then((values) => {
-        dispatch(setThumbnails(values));
+        dispatch(setProducts(values));
         resolve();
       });
     });
@@ -59,7 +55,7 @@ export const getThumbnails = createAsyncThunk(
 );
 
 export const removeProducts = createAsyncThunk(
-  'products/removeProducts',
+  'products/products/removeProducts',
   async (productIds, { dispatch, getState }) => {
     await mainAxios.post('/api/e-commerce-app/remove-products', { productIds });
 
@@ -69,13 +65,17 @@ export const removeProducts = createAsyncThunk(
 
 const productsSlice = createSlice({
   name: 'products',
-  initialState: { selectedProduct: null, searchText: '', products: [], thumbnails: [] },
+  initialState: {
+    selectedProduct: null,
+    searchText: '',
+    products: [],
+    rowsPerPage: 5,
+    page: 0,
+    totalRecords: 0,
+  },
   reducers: {
     setProducts: (state, action) => {
       state.products = action.payload;
-    },
-    setThumbnails: (state, action) => {
-      state.thumbnails = action.payload;
     },
     setSelectedProduct: (state, action) => {
       state.selectedProduct = action.payload;
@@ -84,10 +84,26 @@ const productsSlice = createSlice({
     setProductsSearchText: (state, action) => {
       state.searchText = action.payload;
     },
+    setPage: (state, action) => {
+      state.page = action.payload;
+    },
+    setRowsPerPage: (state, action) => {
+      state.rowsPerPage = action.payload;
+    },
+    setTotalRecords: (state, action) => {
+      state.totalRecords = action.payload;
+    },
   },
 });
 
-export const { setProductsSearchText, setSelectedProduct, setProducts, setThumbnails } =
-  productsSlice.actions;
+export const {
+  setProductsSearchText,
+  setSelectedProduct,
+  setProducts,
+  setThumbnails,
+  setPage,
+  setRowsPerPage,
+  setTotalRecords,
+} = productsSlice.actions;
 
 export default productsSlice.reducer;

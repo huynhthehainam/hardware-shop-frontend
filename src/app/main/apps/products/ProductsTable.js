@@ -12,20 +12,18 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import FuseLoading from '@fuse/core/FuseLoading';
-import { getProducts } from './store/productsSlice';
+import { getProducts, setPage, setRowsPerPage } from './store/productsSlice';
 import ProductsTableHead from './ProductsTableHead';
 
 function ProductsTable(props) {
   const dispatch = useDispatch();
-  const productsList = useSelector((state) => state.products.products.products);
-  const searchText = useSelector(({ products }) => products.products.searchText);
-  const thumbnails = useSelector(({ products }) => products.products.thumbnails);
+  const data = useSelector((state) => state.products.products.products);
+  const page = useSelector((state) => state.products.products.page);
+  const totalRecords = useSelector((state) => state.products.products.totalRecords);
+  const rowsPerPage = useSelector((state) => state.products.products.rowsPerPage);
   const [loading, setLoading] = useState(true);
 
   const [selected, setSelected] = useState([]);
-  const [data, setData] = useState(productsList);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [order, setOrder] = useState({
     direction: 'asc',
     id: null,
@@ -36,10 +34,6 @@ function ProductsTable(props) {
       setLoading(false);
     });
   }, [dispatch]);
-
-  useEffect(() => {
-    setData(productsList);
-  }, [productsList]);
 
   function handleRequestSort(event, property) {
     const id = property;
@@ -92,11 +86,14 @@ function ProductsTable(props) {
   }
 
   function handleChangePage(event, value) {
-    setPage(value);
+    console.log('page change');
+    dispatch(setPage(value));
+    dispatch(getProducts());
   }
 
   function handleChangeRowsPerPage(event) {
-    setRowsPerPage(event.target.value);
+    dispatch(setRowsPerPage(event.target.value));
+    dispatch(getProducts());
   }
 
   if (loading) {
@@ -116,7 +113,6 @@ function ProductsTable(props) {
       </motion.div>
     );
   }
-
   return (
     <div className="w-full flex flex-col">
       <FuseScrollbars className="flex-grow overflow-x-auto">
@@ -158,12 +154,8 @@ function ProductsTable(props) {
                     scope="row"
                     padding="none"
                   >
-                    {thumbnails[index].url ? (
-                      <img
-                        className="w-full block rounded"
-                        src={thumbnails[index].url}
-                        alt={n.name}
-                      />
+                    {n.image ? (
+                      <img className="w-full block rounded" src={n.image} alt={n.name} />
                     ) : (
                       <img
                         className="w-full block rounded"
@@ -222,8 +214,9 @@ function ProductsTable(props) {
       <TablePagination
         className="flex-shrink-0 border-t-1"
         component="div"
-        count={data.length}
+        count={totalRecords}
         rowsPerPage={rowsPerPage}
+        rowsPerPageOptions={[5, 10, 20]}
         page={page}
         backIconButtonProps={{
           'aria-label': 'Previous Page',

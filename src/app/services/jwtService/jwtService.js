@@ -93,7 +93,7 @@ class JwtService extends FuseUtils.EventEmitter {
     if (user.shop) {
       user.role = [...user.role, `shop-${user.shop.role.toLowerCase()}`];
     }
-
+    console.log('convert role', user);
     return user;
   };
 

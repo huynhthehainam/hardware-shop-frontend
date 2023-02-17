@@ -7,7 +7,7 @@ const AdminRoleExampleConfig = {
       config: {},
     },
   },
-  auth: authRoles.admin, // ['admin']
+  auth: authRoles.sysAdmin, // ['admin']
   routes: [
     {
       path: '/auth/admin-role-example',

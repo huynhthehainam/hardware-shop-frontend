@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { selectMainTheme } from 'app/store/fuse/settingsSlice';
 import { useDebounce } from '@fuse/hooks';
-import { setProductsSearchText } from './store/productsSlice';
+import { setProductsSearchText, getProducts, setPage } from './store/productsSlice';
 
 function ProductsHeader(props) {
   const dispatch = useDispatch();
@@ -17,7 +17,8 @@ function ProductsHeader(props) {
   const mainTheme = useSelector(selectMainTheme);
   const debounce = useDebounce((e) => {
     console.log('search', e.target.value ?? '');
-    // dispatch(getProducts({ search: e.target.value }));
+    dispatch(setPage(0));
+    dispatch(getProducts({ search: e.target.value }));
   }, 500);
   const handleSearchChanged = (ev) => {
     dispatch(setProductsSearchText(ev.target.value ?? ''));

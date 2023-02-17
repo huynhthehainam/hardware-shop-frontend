@@ -1,3 +1,4 @@
+import { authRoles } from 'app/auth';
 import i18n from 'i18n';
 import en from './i18n/en';
 import vi from './i18n/vi';
@@ -15,6 +16,12 @@ const ProductsAppConfig = {
     {
       path: '/apps/products',
       component: lazy(() => import('./Products')),
+      auth: authRoles.shopAdmin,
+    },
+    {
+      path: '/apps/product/:productId',
+      component: lazy(() => import('./CreateOrUpdateProduct')),
+      auth: authRoles.shopAdmin,
     },
   ],
 };

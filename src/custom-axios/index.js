@@ -6,6 +6,7 @@ export const urlConfig = {
   loginByToken: '/api/auth/loginByToken',
   getCurrentUserAvatar: '/api/users/me/getAvatar',
   getProducts: '/api/products',
+  getCategories: '/api/productCategories',
   getProductThumbnail: (id) => `/api/products/${id}/thumbnail`,
 };
 export default mainAxios;

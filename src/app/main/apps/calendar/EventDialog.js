@@ -127,7 +127,7 @@ function EventDialog(props) {
       {...eventDialog.props}
       onClose={closeComposeDialog}
       fullWidth
-      maxWidth="xs"
+      maxWidth="lg"
       component="form"
     >
       <AppBar position="static" elevation={0}>

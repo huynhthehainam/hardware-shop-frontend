@@ -2,19 +2,15 @@ import { authRoles } from 'app/auth';
 import i18next from 'i18next';
 import DocumentationNavigation from '../main/documentation/DocumentationNavigation';
 
-import ar from './navigation-i18n/ar';
 import en from './navigation-i18n/en';
-import tr from './navigation-i18n/tr';
 import vi from './navigation-i18n/vi';
 
 i18next.addResourceBundle('en', 'navigation', en);
-i18next.addResourceBundle('tr', 'navigation', tr);
-i18next.addResourceBundle('ar', 'navigation', ar);
 i18next.addResourceBundle('vi', 'navigation', vi);
 
 const navigationConfig = [
   {
-    id: 'manageOrders',
+    id: 'manage-orders',
     title: 'Manage Orders',
     translate: 'MANAGE_ORDERS',
     type: 'collapse',
@@ -30,18 +26,30 @@ const navigationConfig = [
     ],
   },
   {
-    id: 'orders',
-    title: 'Orders',
+    id: 'manage-products',
+    title: 'Products',
     translate: 'MANAGE_PRODUCTS',
     type: 'collapse',
+    auth: authRoles.shopAdmin,
+
     children: [
       {
-        id: 'products',
+        id: 'product-list',
         title: 'Products',
         translate: 'PRODUCTS',
         type: 'item',
         url: '/apps/products',
         exact: true,
+        auth: authRoles.shopAdmin,
+      },
+      {
+        id: 'new-product',
+        title: 'New product',
+        translate: 'NEW_PRODUCT',
+        type: 'item',
+        url: '/apps/product/new',
+        exact: true,
+        auth: authRoles.shopAdmin,
       },
     ],
   },
@@ -58,6 +66,7 @@ const navigationConfig = [
         translate: 'DASHBOARDS',
         type: 'collapse',
         icon: 'dashboard',
+
         children: [
           {
             id: 'analytics-dashboard',
@@ -654,7 +663,7 @@ const navigationConfig = [
         id: 'only-admin-navigation-item',
         title: 'Nav item only for Admin',
         type: 'item',
-        auth: authRoles.admin,
+        auth: authRoles.sysAdmin,
         url: '/auth/admin-role-example',
         icon: 'verified_user',
       },
