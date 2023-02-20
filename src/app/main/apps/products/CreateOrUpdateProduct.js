@@ -14,8 +14,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import reducer from './store';
 import ProductHeader from './ProductHeader';
 import BasicInfoTab from './create-update-product-tabs/BasicInfoTab';
-import { setNewProduct } from './store/newUpdateProduct';
+import { getProductById, setMode, setNewProduct } from './store/newUpdateProduct';
 import ImagesTab from './create-update-product-tabs/ImagesTab';
+import PricingTab from './create-update-product-tabs/PricingTab';
+import InventoryTab from './create-update-product-tabs/InventoryTab';
+import constants from './constants';
 
 const Root = styled(FusePageCarded)(({ theme }) => ({
   '& .FusePageCarded-header': {
@@ -30,7 +33,11 @@ const Root = styled(FusePageCarded)(({ theme }) => ({
 }));
 
 const schema = yup.object().shape({
-  name: yup.string().required('Enter name'),
+  name: yup.string().required('ENTER_NAME_VALIDATION'),
+  unitId: yup.number().required('ENTER_UNIT_VALIDATION'),
+  priceForCustomer: yup.number().required('ENTER_PRICE_VALIDATION'),
+  images: yup.array().min(1),
+  thumbnailId: yup.string().required(),
 });
 const CreateOrUpdateProduct = () => {
   const [tab, setTab] = useState(0);
@@ -47,9 +54,11 @@ const CreateOrUpdateProduct = () => {
   useDeepCompareEffect(() => {
     const { productId } = routeParams;
     if (productId === 'new') {
+      dispatch(setMode(constants.NEW_MODE));
       dispatch(setNewProduct());
     } else {
-      console.log('get product');
+      dispatch(setMode(constants.UPDATE_MODE));
+      dispatch(getProductById({ id: productId }));
     }
   }, [routeParams]);
   useEffect(() => {
@@ -88,6 +97,12 @@ const CreateOrUpdateProduct = () => {
             </div>
             <div className={tab !== 1 ? 'hidden' : ''}>
               <ImagesTab />
+            </div>
+            <div className={tab !== 2 ? 'hidden' : ''}>
+              <PricingTab />
+            </div>
+            <div className={tab !== 3 ? 'hidden' : ''}>
+              <InventoryTab />
             </div>
           </div>
         }

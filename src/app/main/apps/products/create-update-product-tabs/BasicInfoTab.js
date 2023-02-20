@@ -1,7 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import InputAdornment from '@mui/material/InputAdornment';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCategories } from '../store/newUpdateProduct';
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+
+import FormControl from '@mui/material/FormControl';
+import {
+  getCategories,
+  getUnitCategories,
+  getUnits,
+  setUnitCategoryId,
+} from '../store/newUpdateProduct';
 
 const { TextField, Autocomplete, Select, MenuItem, CircularProgress } = require('@mui/material');
 const { Controller, useFormContext } = require('react-hook-form');
@@ -10,13 +20,26 @@ function BasicInfoTab() {
   const formContext = useFormContext();
   const dispatch = useDispatch();
   const { t } = useTranslation('products');
-  const { control, formState } = formContext;
+  const { control, formState, setValue } = formContext;
   const { errors } = formState;
   const categories = useSelector(({ products }) => products.newUpdateProduct.categories);
-  const [loading, setLoading] = useState(true);
+  const unitCategories = useSelector(({ products }) => products.newUpdateProduct.unitCategories);
+  const units = useSelector(({ products }) => products.newUpdateProduct.units);
+  const unitCategoryId = useSelector(({ products }) => products.newUpdateProduct.unitCategoryId);
+
+  const [isProductCategoriesLoading, setIsProductCategoriesLoading] = useState(true);
+  const [isUnitCategoriesLoading, setIsUnitCategoriesLoading] = useState(true);
+  const [isUnitLoading, setIsUnitLoading] = useState(true);
   useEffect(() => {
     dispatch(getCategories()).then(() => {
-      setLoading(false);
+      setIsProductCategoriesLoading(false);
+    });
+    dispatch(getUnitCategories()).then(() => {
+      setIsUnitCategoriesLoading(false);
+    });
+    dispatch(getUnits()).then(() => {
+      console.log('finish get unit');
+      setIsUnitLoading(false);
     });
   }, [dispatch]);
   return (
@@ -31,7 +54,7 @@ function BasicInfoTab() {
               className="mt-8 mb-16"
               error={!!errors.name}
               required
-              helperText={errors?.name?.message}
+              helperText={t(errors?.name?.message)}
               label={t('NAME_LABEL')}
               autoFocus
               id="name"
@@ -58,6 +81,67 @@ function BasicInfoTab() {
           />
         )}
       />
+      <Box sx={{ minWidth: 120 }}>
+        <FormControl fullWidth className="mt-8 mb-16">
+          <InputLabel id="unitCategoryLabel">{t('UNIT_CATEGORY_LABEL')}</InputLabel>
+          <Select
+            labelId="unitCategoryLabel"
+            value={unitCategoryId}
+            label={t('UNIT_CATEGORY_LABEL')}
+            endAdornment={
+              isUnitCategoriesLoading ? (
+                <InputAdornment position="end">
+                  <CircularProgress size={20} />
+                </InputAdornment>
+              ) : null
+            }
+            onChange={(e) => {
+              setValue('unitId', null);
+              setIsUnitLoading(true);
+              dispatch(setUnitCategoryId(e.target.value));
+              dispatch(getUnits()).then(() => {
+                setIsUnitLoading(false);
+              });
+            }}
+          >
+            {unitCategories.map((e) => (
+              <MenuItem value={e.id} key={`unitCategory-${e.id}`}>
+                {e.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+      <Controller
+        name="unitId"
+        control={control}
+        render={({ field }) => (
+          <Box sx={{ minWidth: 120 }}>
+            <FormControl required fullWidth className="mt-8 mb-16">
+              <InputLabel id="unitLabel">{t('UNIT_LABEL')}</InputLabel>
+              <Select
+                labelId="unitLabel"
+                {...field}
+                endAdornment={
+                  isUnitLoading ? (
+                    <InputAdornment position="end">
+                      <CircularProgress size={20} />
+                    </InputAdornment>
+                  ) : null
+                }
+                {...field}
+                label={t('UNIT_LABEL')}
+              >
+                {units.map((e) => (
+                  <MenuItem value={e.id} key={`unit-${e.id}`}>
+                    {e.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+        )}
+      />
 
       <Controller
         name="categories"
@@ -65,7 +149,7 @@ function BasicInfoTab() {
         defaultValue={[]}
         render={({ field: { onChange, value } }) => (
           <Autocomplete
-            loading={loading}
+            loading={isProductCategoriesLoading}
             className="mt-8 mb-16"
             multiple
             getOptionLabel={(item) => {
@@ -89,13 +173,33 @@ function BasicInfoTab() {
                   ...params.InputProps,
                   endAdornment: (
                     <>
-                      {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                      {isProductCategoriesLoading ? (
+                        <CircularProgress color="inherit" size={20} />
+                      ) : null}
                       {params.InputProps.endAdornment}
                     </>
                   ),
                 }}
               />
             )}
+          />
+        )}
+      />
+      <Controller
+        name="mass"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            className="mt-8 mb-16"
+            label={t('MASS_LABEL')}
+            id="pricePerMass"
+            InputProps={{
+              startAdornment: <InputAdornment position="start">Kg</InputAdornment>,
+            }}
+            type="number"
+            variant="outlined"
+            fullWidth
           />
         )}
       />

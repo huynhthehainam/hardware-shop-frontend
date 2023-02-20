@@ -7,6 +7,15 @@ export const urlConfig = {
   getCurrentUserAvatar: '/api/users/me/getAvatar',
   getProducts: '/api/products',
   getCategories: '/api/productCategories',
-  getProductThumbnail: (id) => `/api/products/${id}/thumbnail`,
+  getUnitCategories: '/api/unitCategories',
+  getUnits: '/api/units',
+  getWarehouses: '/api/warehouses',
+  createWarehouse: '/api/products',
+  convertUnitValueById: (id) => `/api/units/${id}/roundValue`,
+  uploadProductImageById: (id) => `/api/products/${id}/uploadImage`,
+  getAssetByProductIdAndAssetId: (productId, assetId) =>
+    `/api/products/${productId}/assets/${assetId}`,
+  getProductDetailById: (id) => `/api/products/${id}`,
+  getProductThumbnailById: (id) => `/api/products/${id}/thumbnail`,
 };
 export default mainAxios;

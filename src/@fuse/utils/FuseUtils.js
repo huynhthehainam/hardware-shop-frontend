@@ -1,6 +1,7 @@
 // eslint-disable-next-line max-classes-per-file
 import _ from '@lodash';
 import * as colors from '@mui/material/colors';
+import mainAxios, { urlConfig } from 'custom-axios';
 
 class EventEmitter {
   constructor() {
@@ -403,6 +404,18 @@ class FuseUtils {
 
   static sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  static convertUnitValue(unitId, value) {
+    return new Promise((resolve) => {
+      mainAxios
+        .post(urlConfig.convertUnitValueById(unitId), {
+          value,
+        })
+        .then((resp) => {
+          resolve(resp.data.data);
+        });
+    });
   }
 }
 

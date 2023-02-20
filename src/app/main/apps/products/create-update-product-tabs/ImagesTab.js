@@ -5,6 +5,9 @@ import { styled } from '@mui/material/styles';
 import clsx from 'clsx';
 import _ from 'lodash';
 import FuseUtils from '@fuse/utils/FuseUtils';
+import { useDispatch, useSelector } from 'react-redux';
+import constants from '../constants';
+import { uploadImage } from '../store/newUpdateProduct';
 
 const Root = styled('div')(({ theme }) => {
   return {
@@ -31,6 +34,7 @@ const Root = styled('div')(({ theme }) => {
       transitionProperty: 'box-shadow',
       transitionDuration: theme.transitions.duration.short,
       transitionTimingFunction: theme.transitions.easing.easeInOut,
+
       '&:hover': {
         '& .productImageFeaturedStar': {
           opacity: 0.8,
@@ -45,17 +49,20 @@ const Root = styled('div')(({ theme }) => {
         '& .productImageFeaturedStar': {
           opacity: 1,
         },
-        '&:hover .productImageFeaturedStar': {
-          opacity: 1,
-        },
+        // '&:hover .productImageFeaturedStar': {
+        //   opacity: 1,
+        // },
       },
     },
   };
 });
 const ImagesTab = () => {
   const formContext = useFormContext();
+  const dispatch = useDispatch();
+  const mode = useSelector(({ products }) => products.newUpdateProduct.mode);
   const { control, formState, watch, setValue, getValues, reset } = formContext;
   const imageUrls = watch('imageUrls');
+  const productId = watch('id');
   return (
     <Root>
       <div className="flex justify-center sm:justify-start flex-wrap -mx-16">
@@ -90,13 +97,19 @@ const ImagesTab = () => {
                             url: `data:${file.type};base64,${btoa(reader.result)}`,
                             type: 'image',
                           };
-                          resolve(newImage);
+                          if (mode === constants.UPDATE_MODE) {
+                            file.assetType = constants.SLIDE_ASSET_TYPE;
+                            dispatch(uploadImage({ productId, image: file })).then(() => {
+                              resolve(newImage);
+                            });
+                          }
                         };
                         reader.readAsBinaryString(file);
                       });
                     });
                     Promise.all(promises).then((values) => {
                       console.log('values', values);
+
                       setValue('imageUrls', [...getValues('imageUrls'), ...values]);
                     });
 
@@ -139,10 +152,6 @@ const ImagesTab = () => {
                     const removedImages = [...images];
                     setValue('imageUrls', removedUrls);
                     setValue('images', removedImages);
-                    // reset({
-                    //     images: removedImages,
-                    //     imageUrls: removedUrls
-                    // })
                   }}
                   className="productImageRemoveButton text-red text-20 "
                 >

@@ -4,27 +4,63 @@ import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { motion } from 'framer-motion';
 import { useFormContext } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import _ from '@lodash';
 import { useTranslation } from 'react-i18next';
+import { LoadingButton } from '@mui/lab';
+import { useState } from 'react';
+import { createWarehouse } from './store/newUpdateProduct';
+import constants from './constants';
 
 function ProductHeader(props) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch = useDispatch();
   const methods = useFormContext();
-  const { formState, watch, getValues } = methods;
+  const { formState, watch, getValues, handleSubmit } = methods;
   const { isValid, dirtyFields } = formState;
-  const featuredImageId = watch('featuredImageId');
-  const images = watch('images');
+  const thumbnailId = watch('thumbnailId');
+  const images = watch('imageUrls');
+  const { t } = useTranslation('products');
   const name = watch('name');
   const theme = useTheme();
   const history = useHistory();
+  const mode = useSelector(({ products }) => products.newUpdateProduct.mode);
 
   function handleSaveProduct() {
     const data = getValues();
-    console.log('save data', data);
+    data.categoryIds = data.categories.map((e) => e.id);
+    setIsSubmitting(true);
+    const validatedData = {
+      name: data.name,
+      description: data.description,
+      unitId: data.unitId,
+      categoryIds: data.categoryIds,
+      mass: data.mass,
+      pricePerMass: data.pricePerMass,
+      percentForFamiliarCustomer: data.percentForFamiliarCustomer,
+      percentForCustomer: data.percentForCustomer,
+      hasAutoCalculatePermission: data.hasAutoCalculatePermission,
+      priceForFamiliarCustomer: data.priceForFamiliarCustomer,
+      priceForCustomer: data.priceForCustomer,
+      images: data.images.map((e) => {
+        const isThumbnail = e.myId === data.thumbnailId;
+        e.assetType = isThumbnail ? constants.THUMBNAIL_ASSET_TYPE : constants.SLIDE_ASSET_TYPE;
+        return e;
+      }),
+      warehouses: data.warehouses.map((e) => {
+        return { warehouseId: e.warehouseId, quantity: parseFloat(e.quantity) };
+      }),
+    };
+    dispatch(createWarehouse(validatedData))
+      .then((resp) => {
+        setIsSubmitting(false);
+        history.push({ pathname: '/apps/products' });
+      })
+      .catch((err) => {
+        setIsSubmitting(false);
+      });
   }
-  const { t } = useTranslation('products');
 
   function handleRemoveProduct() {}
 
@@ -55,10 +91,10 @@ function ProductHeader(props) {
             initial={{ scale: 0 }}
             animate={{ scale: 1, transition: { delay: 0.3 } }}
           >
-            {images.length > 0 && featuredImageId ? (
+            {images.length > 0 && thumbnailId ? (
               <img
                 className="w-32 sm:w-48 rounded"
-                src={_.find(images, { id: featuredImageId }).url}
+                src={_.find(images, { id: thumbnailId }).url}
                 alt={name}
               />
             ) : (
@@ -75,7 +111,7 @@ function ProductHeader(props) {
                 {name || 'New Product'}
               </Typography>
               <Typography variant="caption" className="font-medium">
-                Product Detail
+                {t('PRODUCT_DETAIL')}
               </Typography>
             </motion.div>
           </div>
@@ -95,15 +131,16 @@ function ProductHeader(props) {
         >
           Remove
         </Button>
-        <Button
+        <LoadingButton
           className="whitespace-nowrap mx-4"
           variant="contained"
+          loading={isSubmitting}
           color="secondary"
           disabled={_.isEmpty(dirtyFields) || !isValid}
           onClick={handleSaveProduct}
         >
           Save
-        </Button>
+        </LoadingButton>
       </motion.div>
     </div>
   );

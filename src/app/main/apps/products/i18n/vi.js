@@ -12,6 +12,13 @@ const locale = {
   PRICE_FOR_CUSTOMER_LABEL: 'Giá khách khác',
   MANAGE_PRODUCTS: 'Danh sách sản phẩm',
   CATEGORIES_PLACE_HOLDER: 'Chọn loại sản phẩm',
+  HAS_AUTO_CALCULATE_LABEL: 'Tự động tính giá',
+  UNIT_CATEGORY_LABEL: 'Nhóm đơn vị',
+  QUANTITY_OF_WAREHOUSE_LABEL: 'Số lượng ở kho {{name}}',
+  PRODUCT_DETAIL: 'Chi tiết sản phẩm',
+  ENTER_NAME_VALIDATION: 'Vui lòng điền tên',
+  ENTER_PRICE_VALIDATION: 'Vui long điền giá',
+  ENTER_UNIT_VALIDATION: 'Vui lòng chọn đơn vị',
 };
 
 export default locale;

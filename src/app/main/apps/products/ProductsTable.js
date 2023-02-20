@@ -22,7 +22,7 @@ function ProductsTable(props) {
   const totalRecords = useSelector((state) => state.products.products.totalRecords);
   const rowsPerPage = useSelector((state) => state.products.products.rowsPerPage);
   const [loading, setLoading] = useState(true);
-
+  const shop = useSelector(({ auth }) => auth.user.shop);
   const [selected, setSelected] = useState([]);
   const [order, setOrder] = useState({
     direction: 'asc',
@@ -62,7 +62,7 @@ function ProductsTable(props) {
   }
 
   function handleClick(item) {
-    props.history.push(`/apps/e-commerce/products/${item.id}/${item.handle}`);
+    props.history.push(`/apps/products/${item.id}`);
   }
 
   function handleCheck(event, id) {
@@ -178,31 +178,28 @@ function ProductsTable(props) {
                   </TableCell>
 
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="right">
-                    {n.mass.toLocaleString()} <span> Kg </span>
-                    {/* <i
-                        className={clsx(
-                          'inline-block w-8 h-8 rounded mx-8',
-                          n.quantity <= 5 && 'bg-red',
-                          n.quantity > 5 && n.quantity <= 25 && 'bg-orange',
-                          n.quantity > 25 && 'bg-green'
-                        )}
-                      /> */}
+                    {n.mass && n.mass.toLocaleString()} {n.mass && <span> Kg </span>}
                   </TableCell>
 
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="right">
-                    {n.pricePerMass.toLocaleString()} <span>VND</span>
+                    {n.pricePerMass && n.pricePerMass.toLocaleString()}
+                    {n.pricePerMass && <span>VND</span>}
                   </TableCell>
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="right">
-                    {n.percentForFamiliarCustomer} <span>%</span>
+                    {n.percentForFamiliarCustomer && n.percentForFamiliarCustomer}
+                    {n.percentForFamiliarCustomer && <span>%</span>}
                   </TableCell>
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="right">
-                    {n.percentForCustomer} <span>%</span>
+                    {n.percentForCustomer && n.percentForCustomer}
+                    {n.percentForCustomer && <span>%</span>}
                   </TableCell>
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="right">
-                    {n.priceForFamiliarCustomer.toLocaleString()} <span>VND</span>
+                    {n.priceForFamiliarCustomer && n.priceForFamiliarCustomer.toLocaleString()}
+                    {n.priceForFamiliarCustomer && <span> {shop.cashUnitName} </span>}
                   </TableCell>
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="right">
-                    {n.priceForCustomer.toLocaleString()} <span>VND</span>
+                    {n.priceForCustomer && n.priceForCustomer.toLocaleString()}
+                    {n.priceForCustomer && <span> {shop.cashUnitName} </span>}
                   </TableCell>
                 </TableRow>
               );
