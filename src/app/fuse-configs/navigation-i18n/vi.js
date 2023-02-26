@@ -5,5 +5,8 @@ const locale = {
   PRODUCTS: 'Danh sách sản phẩm',
   MANAGE_PRODUCTS: 'Quản lý sản phẩm',
   NEW_PRODUCT: 'Tạo sản phẩm',
+  MANAGE_INVOICES: 'Quản lý hoá đơn',
+  INVOICES: 'Danh sách hoá đơn',
+  NEW_INVOICE: 'Tạo hoá đơn',
 };
 export default locale;

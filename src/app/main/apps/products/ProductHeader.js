@@ -10,7 +10,9 @@ import _ from '@lodash';
 import { useTranslation } from 'react-i18next';
 import { LoadingButton } from '@mui/lab';
 import { useState } from 'react';
-import { createWarehouse } from './store/newUpdateProduct';
+import { addNotification } from 'app/fuse-layouts/shared-components/notificationPanel/store/dataSlice';
+import NotificationModel from 'app/fuse-layouts/shared-components/notificationPanel/model/NotificationModel';
+import { createProduct, updateProduct } from './store/newUpdateProductSlice';
 import constants from './constants';
 
 function ProductHeader(props) {
@@ -18,7 +20,7 @@ function ProductHeader(props) {
   const dispatch = useDispatch();
   const methods = useFormContext();
   const { formState, watch, getValues, handleSubmit } = methods;
-  const { isValid, dirtyFields } = formState;
+  const { isValid, dirtyFields, errors } = formState;
   const thumbnailId = watch('thumbnailId');
   const images = watch('imageUrls');
   const { t } = useTranslation('products');
@@ -26,40 +28,72 @@ function ProductHeader(props) {
   const theme = useTheme();
   const history = useHistory();
   const mode = useSelector(({ products }) => products.newUpdateProduct.mode);
-
   function handleSaveProduct() {
     const data = getValues();
     data.categoryIds = data.categories.map((e) => e.id);
     setIsSubmitting(true);
-    const validatedData = {
-      name: data.name,
-      description: data.description,
-      unitId: data.unitId,
-      categoryIds: data.categoryIds,
-      mass: data.mass,
-      pricePerMass: data.pricePerMass,
-      percentForFamiliarCustomer: data.percentForFamiliarCustomer,
-      percentForCustomer: data.percentForCustomer,
-      hasAutoCalculatePermission: data.hasAutoCalculatePermission,
-      priceForFamiliarCustomer: data.priceForFamiliarCustomer,
-      priceForCustomer: data.priceForCustomer,
-      images: data.images.map((e) => {
-        const isThumbnail = e.myId === data.thumbnailId;
-        e.assetType = isThumbnail ? constants.THUMBNAIL_ASSET_TYPE : constants.SLIDE_ASSET_TYPE;
-        return e;
-      }),
-      warehouses: data.warehouses.map((e) => {
-        return { warehouseId: e.warehouseId, quantity: parseFloat(e.quantity) };
-      }),
-    };
-    dispatch(createWarehouse(validatedData))
-      .then((resp) => {
+    if (mode === constants.UPDATE_MODE) {
+      const validatedData = {
+        id: data.id,
+        name: data.name,
+        description: data.description,
+        unitId: data.unitId,
+        categoryIds: data.categoryIds,
+        mass: data.mass,
+        pricePerMass: data.pricePerMass,
+        percentForFamiliarCustomer: data.percentForFamiliarCustomer,
+        percentForCustomer: data.percentForCustomer,
+        hasAutoCalculatePermission: data.hasAutoCalculatePermission,
+        priceForFamiliarCustomer: data.priceForFamiliarCustomer,
+        priceForCustomer: data.priceForCustomer,
+
+        warehouses: data.warehouses.map((e) => {
+          return { warehouseId: e.warehouseId, quantity: parseFloat(e.quantity) };
+        }),
+      };
+      dispatch(updateProduct(validatedData)).then((resp) => {
+        dispatch(
+          addNotification(
+            NotificationModel({
+              message: t('UPDATE_SUCCESSFULLY'),
+              options: { variant: 'success' },
+            })
+          )
+        );
         setIsSubmitting(false);
         history.push({ pathname: '/apps/products' });
-      })
-      .catch((err) => {
-        setIsSubmitting(false);
       });
+    } else {
+      const validatedData = {
+        name: data.name,
+        description: data.description,
+        unitId: data.unitId,
+        categoryIds: data.categoryIds,
+        mass: data.mass,
+        pricePerMass: data.pricePerMass,
+        percentForFamiliarCustomer: data.percentForFamiliarCustomer,
+        percentForCustomer: data.percentForCustomer,
+        hasAutoCalculatePermission: data.hasAutoCalculatePermission,
+        priceForFamiliarCustomer: data.priceForFamiliarCustomer,
+        priceForCustomer: data.priceForCustomer,
+        images: data.images.map((e) => {
+          const isThumbnail = e.myId === data.thumbnailId;
+          e.assetType = isThumbnail ? constants.THUMBNAIL_ASSET_TYPE : constants.SLIDE_ASSET_TYPE;
+          return e;
+        }),
+        warehouses: data.warehouses.map((e) => {
+          return { warehouseId: e.warehouseId, quantity: parseFloat(e.quantity) };
+        }),
+      };
+      dispatch(createProduct(validatedData))
+        .then((resp) => {
+          setIsSubmitting(false);
+          history.push({ pathname: '/apps/products' });
+        })
+        .catch((err) => {
+          setIsSubmitting(false);
+        });
+    }
   }
 
   function handleRemoveProduct() {}
@@ -122,15 +156,17 @@ function ProductHeader(props) {
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0, transition: { delay: 0.3 } }}
       >
-        <Button
-          className="whitespace-nowrap mx-4"
-          variant="contained"
-          color="secondary"
-          onClick={handleRemoveProduct}
-          startIcon={<Icon className="hidden sm:flex">delete</Icon>}
-        >
-          Remove
-        </Button>
+        {mode === constants.UPDATE_MODE && (
+          <Button
+            className="whitespace-nowrap mx-4"
+            variant="contained"
+            color="error"
+            onClick={handleRemoveProduct}
+            startIcon={<Icon className="hidden sm:flex">delete</Icon>}
+          >
+            {t('REMOVE_BUTTON')}
+          </Button>
+        )}
         <LoadingButton
           className="whitespace-nowrap mx-4"
           variant="contained"
@@ -139,7 +175,7 @@ function ProductHeader(props) {
           disabled={_.isEmpty(dirtyFields) || !isValid}
           onClick={handleSaveProduct}
         >
-          Save
+          {t('SAVE_BUTTON')}
         </LoadingButton>
       </motion.div>
     </div>

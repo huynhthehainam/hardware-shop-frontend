@@ -4,7 +4,7 @@ import mainAxios, { urlConfig } from 'custom-axios';
 export const getProducts = createAsyncThunk(
   'products/products/getProducts',
   (params, { dispatch, getState }) => {
-    const { searchText, page, rowsPerPage } = getState().products.products;
+    const { searchText, page, rowsPerPage, order } = getState().products.products;
 
     return new Promise((resolve, reject) => {
       mainAxios
@@ -13,6 +13,8 @@ export const getProducts = createAsyncThunk(
             search: searchText,
             pageIndex: page,
             pageSize: rowsPerPage,
+            sortFieldName: order.id,
+            isSortAscending: order.direction === 'asc',
           },
         })
         .then((response) => {
@@ -72,6 +74,10 @@ const productsSlice = createSlice({
     rowsPerPage: 5,
     page: 0,
     totalRecords: 0,
+    order: {
+      id: 'name',
+      direction: 'asc',
+    },
   },
   reducers: {
     setProducts: (state, action) => {
@@ -93,6 +99,9 @@ const productsSlice = createSlice({
     setTotalRecords: (state, action) => {
       state.totalRecords = action.payload;
     },
+    setOrder: (state, action) => {
+      state.order = action.payload;
+    },
   },
 });
 
@@ -104,6 +113,7 @@ export const {
   setPage,
   setRowsPerPage,
   setTotalRecords,
+  setOrder,
 } = productsSlice.actions;
 
 export default productsSlice.reducer;

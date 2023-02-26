@@ -1,19 +1,23 @@
 import { TextField } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Icon from '@mui/material/Icon';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useState } from 'react';
 import FuseUtils from '@fuse/utils/FuseUtils';
+import { addNotification } from 'app/fuse-layouts/shared-components/notificationPanel/store/dataSlice';
+import NotificationModel from 'app/fuse-layouts/shared-components/notificationPanel/model/NotificationModel';
 
 const { useFormContext, Controller } = require('react-hook-form');
 
 function PricingTab() {
+  const dispatch = useDispatch();
   const formContext = useFormContext();
   const { control, formState, setValue, getValues } = formContext;
+
   const { t } = useTranslation('products');
   const shop = useSelector(({ auth }) => {
     return auth.user.shop;
@@ -22,6 +26,44 @@ function PricingTab() {
   const [isPriceForCustomerCalculating, setIsPriceForCustomerCalculating] = useState(false);
   const [isPriceForFamiliarCustomerCalculating, setIsPriceForFamiliarCustomerCalculating] =
     useState(false);
+  function handleCalculateNotification(mass, percent, pricePerMass) {
+    if (!mass) {
+      dispatch(
+        addNotification(
+          NotificationModel({
+            message: t('ADD_MASS_NOTIFICATION_MSG'),
+            options: {
+              variant: 'error',
+            },
+          })
+        )
+      );
+    }
+    if (!percent) {
+      dispatch(
+        addNotification(
+          NotificationModel({
+            message: t('ADD_PERCENT_NOTIFICATION_MSG'),
+            options: {
+              variant: 'error',
+            },
+          })
+        )
+      );
+    }
+    if (!pricePerMass) {
+      dispatch(
+        addNotification(
+          NotificationModel({
+            message: t('ADD_PRICE_PER_MASS_NOTIFICATION_MSG'),
+            options: {
+              variant: 'error',
+            },
+          })
+        )
+      );
+    }
+  }
   return (
     <div>
       <Controller
@@ -57,7 +99,6 @@ function PricingTab() {
                 <InputAdornment position="end">
                   <LoadingButton
                     onClick={() => {
-                      setIsPriceForFamiliarCustomerCalculating(true);
                       const massStr = getValues('mass');
                       const percentStr = field.value;
 
@@ -67,6 +108,7 @@ function PricingTab() {
                       const percent = parseFloat(percentStr);
                       const pricePerMass = parseFloat(pricePerMassStr);
                       if (mass > 0 && percent > 0 && pricePerMass > 0) {
+                        setIsPriceForFamiliarCustomerCalculating(true);
                         const newValue = (mass * pricePerMass * (100 + percent)) / 100;
                         FuseUtils.convertUnitValue(shop.cashUnitId, newValue).then(
                           (newValueResp) => {
@@ -74,6 +116,8 @@ function PricingTab() {
                             setIsPriceForFamiliarCustomerCalculating(false);
                           }
                         );
+                      } else {
+                        handleCalculateNotification(mass, percent, pricePerMass);
                       }
                     }}
                     endIcon={<Icon fontSize="small">calculate</Icon>}
@@ -107,7 +151,6 @@ function PricingTab() {
                 <InputAdornment position="end">
                   <LoadingButton
                     onClick={() => {
-                      setIsPriceForCustomerCalculating(true);
                       const massStr = getValues('mass');
                       const percentStr = field.value;
 
@@ -117,6 +160,7 @@ function PricingTab() {
                       const percent = parseFloat(percentStr);
                       const pricePerMass = parseFloat(pricePerMassStr);
                       if (mass > 0 && percent > 0 && pricePerMass > 0) {
+                        setIsPriceForCustomerCalculating(true);
                         const newValue = (mass * pricePerMass * (100 + percent)) / 100;
                         FuseUtils.convertUnitValue(shop.cashUnitId, newValue).then(
                           (newValueResp) => {
@@ -124,6 +168,8 @@ function PricingTab() {
                             setIsPriceForCustomerCalculating(false);
                           }
                         );
+                      } else {
+                        handleCalculateNotification(mass, percent, pricePerMass);
                       }
                     }}
                     endIcon={<Icon fontSize="small">calculate</Icon>}

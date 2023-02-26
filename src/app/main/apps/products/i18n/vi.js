@@ -19,6 +19,15 @@ const locale = {
   ENTER_NAME_VALIDATION: 'Vui lòng điền tên',
   ENTER_PRICE_VALIDATION: 'Vui long điền giá',
   ENTER_UNIT_VALIDATION: 'Vui lòng chọn đơn vị',
+  REMOVE_BUTTON: 'Xoá',
+  SAVE_BUTTON: 'Lưu',
+  ADD_MASS_NOTIFICATION_MSG: 'Chưa thêm khối lượng',
+  ADD_PERCENT_NOTIFICATION_MSG: 'Chưa thêm phần trăm',
+  ADD_PRICE_PER_MASS_NOTIFICATION_MSG: 'Chưa thêm giá trên khối lượng',
+  UPDATE_SUCCESSFULLY: 'Cập nhật thành công',
+  PRODUCTS_HEADER: 'Sản phẩm',
+  ADD_NEW_PRODUCT_BUTTON: 'Thêm sản phẩm',
+  NEW_BUTTON: 'Thêm',
 };
 
 export default locale;

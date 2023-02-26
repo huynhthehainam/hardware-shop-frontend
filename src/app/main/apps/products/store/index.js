@@ -1,5 +1,5 @@
 import products from './productsSlice';
-import newUpdateProduct from './newUpdateProduct';
+import newUpdateProduct from './newUpdateProductSlice';
 
 const { combineReducers } = require('@reduxjs/toolkit');
 

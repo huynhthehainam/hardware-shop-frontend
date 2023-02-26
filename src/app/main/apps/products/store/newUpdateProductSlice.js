@@ -45,11 +45,9 @@ export const getUnits = createAsyncThunk(
 export const getWarehouses = createAsyncThunk(
   'products/newUpdateProduct/getWarehouses',
   (params, { dispatch }) => {
-    console.log('get warehouses');
     return new Promise((resolve, reject) => {
       mainAxios.get(urlConfig.getWarehouses).then((resp) => {
         const warehouses = resp.data.data;
-        console.log('get warehouses', warehouses);
         resolve(warehouses);
       });
     });
@@ -62,12 +60,10 @@ export const getProductById = createAsyncThunk(
     return new Promise((resolve, reject) => {
       mainAxios.get(urlConfig.getProductDetailById(id)).then((resp) => {
         const product = resp.data.data;
-        console.log('product', product);
 
         const { assets } = product;
         const promises = assets.map((asset) => {
           return new Promise((downloadResolve, downloadReject) => {
-            console.log('asset', asset);
             const assetId = asset.id;
             const { assetType } = asset;
             mainAxios
@@ -96,7 +92,6 @@ export const getProductById = createAsyncThunk(
           });
         });
         Promise.all(promises).then((values) => {
-          console.log('images', values);
           const blobs = values.map((e) => e.blob);
           const newProduct = { ...product };
 
@@ -114,7 +109,7 @@ export const getProductById = createAsyncThunk(
   }
 );
 
-export const createWarehouse = createAsyncThunk(
+export const createProduct = createAsyncThunk(
   'products/newUpdateProduct/createProduct',
   (data, { dispatch }) => {
     const { images } = data;
@@ -122,7 +117,7 @@ export const createWarehouse = createAsyncThunk(
 
     return new Promise((resolve, reject) => {
       mainAxios
-        .post(urlConfig.createWarehouse, data)
+        .post(urlConfig.createProduct, data)
         .then((resp) => {
           const { id } = resp.data.data;
           const promises = images.map((image) => {
@@ -150,6 +145,28 @@ export const createWarehouse = createAsyncThunk(
     });
   }
 );
+export const updateProduct = createAsyncThunk(
+  'products/newUpdateProduct/updateProduct',
+  (data, { dispatch }) => {
+    return new Promise((resolve, reject) => {
+      mainAxios.post(urlConfig.updateProductById(data.id), data).then((resp) => {
+        resolve();
+      });
+    });
+  }
+);
+export const selectThumbnail = createAsyncThunk(
+  'products/newUpdateProduct/selectThumbnail',
+  (params) => {
+    return new Promise((resolve, reject) => {
+      mainAxios
+        .post(urlConfig.selectProductThumbnailById(params.productId), { assetId: params.assetId })
+        .then((resp) => {
+          resolve();
+        });
+    });
+  }
+);
 export const uploadImage = createAsyncThunk(
   'products/newUpdateProduct/uploadImage',
   (params, { dispatch }) => {
@@ -161,7 +178,8 @@ export const uploadImage = createAsyncThunk(
       mainAxios
         .post(urlConfig.uploadProductImageById(productId), formData)
         .then((uploadResp) => {
-          resolve(uploadResp);
+          const { id } = uploadResp.data.data;
+          resolve({ id });
         })
         .catch((err) => {
           reject();

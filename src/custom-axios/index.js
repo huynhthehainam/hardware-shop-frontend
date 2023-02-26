@@ -10,12 +10,16 @@ export const urlConfig = {
   getUnitCategories: '/api/unitCategories',
   getUnits: '/api/units',
   getWarehouses: '/api/warehouses',
-  createWarehouse: '/api/products',
+  createProduct: '/api/products',
   convertUnitValueById: (id) => `/api/units/${id}/roundValue`,
   uploadProductImageById: (id) => `/api/products/${id}/uploadImage`,
   getAssetByProductIdAndAssetId: (productId, assetId) =>
     `/api/products/${productId}/assets/${assetId}`,
   getProductDetailById: (id) => `/api/products/${id}`,
   getProductThumbnailById: (id) => `/api/products/${id}/thumbnail`,
+  selectProductThumbnailById: (id) => `/api/products/${id}/selectThumbnail`,
+  updateProductById: (id) => `/api/products/${id}/update`,
+  getCustomers: '/api/customers',
+  updateCurrentUserInterfaceConfig: '/api/users/me/updateInterfaceSettings',
 };
 export default mainAxios;

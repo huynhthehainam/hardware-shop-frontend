@@ -2,18 +2,24 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import InputAdornment from '@mui/material/InputAdornment';
 import { useDispatch, useSelector } from 'react-redux';
-import Box from '@mui/material/Box';
-import InputLabel from '@mui/material/InputLabel';
 
-import FormControl from '@mui/material/FormControl';
+import { Box } from '@mui/system';
 import {
   getCategories,
   getUnitCategories,
   getUnits,
   setUnitCategoryId,
-} from '../store/newUpdateProduct';
+} from '../store/newUpdateProductSlice';
 
-const { TextField, Autocomplete, Select, MenuItem, CircularProgress } = require('@mui/material');
+const {
+  TextField,
+  Autocomplete,
+  Select,
+  MenuItem,
+  CircularProgress,
+  FormControl,
+  InputLabel,
+} = require('@mui/material');
 const { Controller, useFormContext } = require('react-hook-form');
 
 function BasicInfoTab() {
@@ -38,7 +44,6 @@ function BasicInfoTab() {
       setIsUnitCategoriesLoading(false);
     });
     dispatch(getUnits()).then(() => {
-      console.log('finish get unit');
       setIsUnitLoading(false);
     });
   }, [dispatch]);
@@ -155,6 +160,9 @@ function BasicInfoTab() {
             getOptionLabel={(item) => {
               return item.name;
             }}
+            isOptionEqualToValue={(option, newValue) => {
+              return option.id === newValue.id;
+            }}
             options={[...categories]}
             value={value}
             onChange={(event, newValue) => {
@@ -166,7 +174,7 @@ function BasicInfoTab() {
                 placeholder={t('CATEGORIES_PLACE_HOLDER')}
                 label={t('CATEGORIES_LABEL')}
                 variant="outlined"
-                InputLabelProps={{
+                inputLabelProps={{
                   shrink: true,
                 }}
                 InputProps={{

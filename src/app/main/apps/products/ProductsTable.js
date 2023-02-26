@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import FuseLoading from '@fuse/core/FuseLoading';
-import { getProducts, setPage, setRowsPerPage } from './store/productsSlice';
+import { getProducts, setPage, setRowsPerPage, setOrder } from './store/productsSlice';
 import ProductsTableHead from './ProductsTableHead';
 
 function ProductsTable(props) {
@@ -24,10 +24,7 @@ function ProductsTable(props) {
   const [loading, setLoading] = useState(true);
   const shop = useSelector(({ auth }) => auth.user.shop);
   const [selected, setSelected] = useState([]);
-  const [order, setOrder] = useState({
-    direction: 'asc',
-    id: null,
-  });
+  const order = useSelector(({ products }) => products.products.order);
 
   useEffect(() => {
     dispatch(getProducts({ search: '' })).then(() => {
@@ -43,10 +40,13 @@ function ProductsTable(props) {
       direction = 'asc';
     }
 
-    setOrder({
-      direction,
-      id,
-    });
+    dispatch(
+      setOrder({
+        direction,
+        id,
+      })
+    );
+    dispatch(getProducts());
   }
 
   function handleSelectAllClick(event) {
@@ -62,7 +62,7 @@ function ProductsTable(props) {
   }
 
   function handleClick(item) {
-    props.history.push(`/apps/products/${item.id}`);
+    props.history.push(`/apps/product/${item.id}`);
   }
 
   function handleCheck(event, id) {
@@ -86,7 +86,6 @@ function ProductsTable(props) {
   }
 
   function handleChangePage(event, value) {
-    console.log('page change');
     dispatch(setPage(value));
     dispatch(getProducts());
   }

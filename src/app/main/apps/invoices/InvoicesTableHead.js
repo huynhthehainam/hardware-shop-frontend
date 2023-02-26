@@ -11,11 +11,9 @@ import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Tooltip from '@mui/material/Tooltip';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { Box } from '@mui/system';
 import TableHead from '@mui/material/TableHead';
 import { useTranslation } from 'react-i18next';
-import { removeProducts } from './store/productsSlice';
 
 const rows = [
   {
@@ -99,14 +97,12 @@ const rows = [
   },
 ];
 
-function ProductsTableHead(props) {
+function InvoicesTableHead(props) {
   const { t } = useTranslation('products');
   const { selectedProductIds } = props;
   const numSelected = selectedProductIds.length;
 
   const [selectedProductsMenu, setSelectedProductsMenu] = useState(null);
-
-  const dispatch = useDispatch();
 
   const createSortHandler = (row) => (event) => {
     if (row.sort) props.onRequestSort(event, row.id);
@@ -152,7 +148,6 @@ function ProductsTableHead(props) {
                 <MenuList>
                   <MenuItem
                     onClick={() => {
-                      dispatch(removeProducts(selectedProductIds));
                       props.onMenuItemClick();
                       closeSelectedProductsMenu();
                     }}
@@ -199,4 +194,4 @@ function ProductsTableHead(props) {
   );
 }
 
-export default ProductsTableHead;
+export default InvoicesTableHead;

@@ -7,7 +7,7 @@ import _ from 'lodash';
 import FuseUtils from '@fuse/utils/FuseUtils';
 import { useDispatch, useSelector } from 'react-redux';
 import constants from '../constants';
-import { uploadImage } from '../store/newUpdateProduct';
+import { selectThumbnail, uploadImage } from '../store/newUpdateProductSlice';
 
 const Root = styled('div')(({ theme }) => {
   return {
@@ -99,7 +99,8 @@ const ImagesTab = () => {
                           };
                           if (mode === constants.UPDATE_MODE) {
                             file.assetType = constants.SLIDE_ASSET_TYPE;
-                            dispatch(uploadImage({ productId, image: file })).then(() => {
+                            dispatch(uploadImage({ productId, image: file })).then((resp) => {
+                              newImage.id = resp.payload.id;
                               resolve(newImage);
                             });
                           }
@@ -108,8 +109,6 @@ const ImagesTab = () => {
                       });
                     });
                     Promise.all(promises).then((values) => {
-                      console.log('values', values);
-
                       setValue('imageUrls', [...getValues('imageUrls'), ...values]);
                     });
 
@@ -131,6 +130,9 @@ const ImagesTab = () => {
               <div
                 onClick={() => {
                   field.onChange(media.id);
+                  if (mode === constants.UPDATE_MODE) {
+                    dispatch(selectThumbnail({ assetId: media.id, productId }));
+                  }
                 }}
                 onKeyDown={() => {}}
                 role="button"

@@ -1,0 +1,23 @@
+const locale = {
+  BASIC_INFO_TAB: 'Thông tin chung',
+  DETAIL_TAB: 'Chi tiết',
+  PDF_TAB: 'Tải xuống',
+  SELECT_CUSTOMER_PLACE_HOLDER: 'Chọn khách hàng',
+  CUSTOMER_LABEL: 'Khách hàng  ',
+  PRODUCT_NAME_LABEL: 'Sản phẩm',
+  QUANTITY_LABEL: 'Số lượng',
+  PRICE_LABEL: 'Đơn giá',
+  TOTAL_COST_LABEL: 'Thành tiền',
+  DESCRIPTION_LABEL: 'Chú thích',
+  GO_BACK_BASIC_MSG: 'Vui lòng điền thông tin chung trước',
+  SELECT_PRODUCT_PLACE_HOLDER: 'Chọn sản phẩm',
+  PRODUCT_LABEL: 'Sản phẩm',
+  ADD_BUTTON: 'Thêm',
+  MANAGE_INVOICES_LABEL: 'Danh sách hoá đơn',
+  NEW_INVOICE_LABEL: 'Hoá đơn mới',
+  INVOICE_DETAIL: 'Chi tiết hoá đơn',
+  DEBT_LABEL: 'Nợ',
+  DEPOSIT_LABEL: 'Cọc',
+  SAVE_BUTTON: 'Lưu',
+};
+export default locale;

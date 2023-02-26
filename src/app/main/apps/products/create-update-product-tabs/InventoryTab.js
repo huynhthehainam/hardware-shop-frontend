@@ -3,10 +3,9 @@ import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import constants from '../constants';
-import { getWarehouses } from '../store/newUpdateProduct';
+import { getWarehouses } from '../store/newUpdateProductSlice';
 
 const { TextField, Autocomplete, Select, MenuItem, CircularProgress } = require('@mui/material');
-const { Inventory } = require('@mui/icons-material');
 
 function WarehouseInventory(props) {
   const formContext = useFormContext();
@@ -47,7 +46,6 @@ function InventoryTab() {
     if (mode === constants.NEW_MODE) {
       dispatch(getWarehouses()).then((resp) => {
         const { payload } = resp;
-        console.log('warehouses', resp);
         payload.forEach((item) => {
           append({
             warehouseId: item.id,

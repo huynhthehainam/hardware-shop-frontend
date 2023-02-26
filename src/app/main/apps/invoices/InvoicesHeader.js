@@ -1,36 +1,30 @@
-import Button from '@mui/material/Button';
-import Icon from '@mui/material/Icon';
-import Input from '@mui/material/Input';
-import Paper from '@mui/material/Paper';
-import { ThemeProvider } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
-import { motion } from 'framer-motion';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { selectMainTheme } from 'app/store/fuse/settingsSlice';
 import { useDebounce } from '@fuse/hooks';
+import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { setProductsSearchText, getProducts, setPage } from './store/productsSlice';
+import { selectMainTheme } from 'app/store/fuse/settingsSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { setInvoiceSearchText } from './store/invoicesSlice';
 
-function ProductsHeader(props) {
+const { Icon, Typography, ThemeProvider, Paper, Link, Button, Input } = require('@mui/material');
+
+const InvoicesHeader = () => {
+  const { t } = useTranslation('invoices');
+  const searchText = useSelector(({ invoices }) => invoices.invoices.searchText);
   const dispatch = useDispatch();
-  const searchText = useSelector((state) => state.products.products.searchText);
-  const mainTheme = useSelector(selectMainTheme);
-  const { t } = useTranslation('products');
-  const debounce = useDebounce((e) => {
-    dispatch(setPage(0));
-    dispatch(getProducts({ search: e.target.value }));
-  }, 500);
+  const debounce = useDebounce((e) => {}, 500);
   const handleSearchChanged = (ev) => {
-    dispatch(setProductsSearchText(ev.target.value ?? ''));
+    dispatch(setInvoiceSearchText(ev.target.value ?? ''));
     debounce(ev);
   };
+  const mainTheme = useSelector(selectMainTheme);
   return (
-    <div className="flex flex-1 w-full items-center justify-between">
+    <div className="flex flex-1 w-full items-center justify-center justify-between">
       <div className="flex items-center">
         <Icon
           component={motion.span}
-          initial={{ scale: 0 }}
+          initial={{
+            scale: 0,
+          }}
           animate={{ scale: 1, transition: { delay: 0.2 } }}
           className="text-24 md:text-32"
         >
@@ -43,7 +37,7 @@ function ProductsHeader(props) {
           delay={300}
           className="hidden sm:flex text-16 md:text-24 mx-12 font-semibold"
         >
-          {t('PRODUCTS_HEADER')}
+          {t('INVOICES_HEADER')}
         </Typography>
       </div>
 
@@ -82,12 +76,12 @@ function ProductsHeader(props) {
           variant="contained"
           color="secondary"
         >
-          <span className="hidden sm:flex">{t('ADD_NEW_PRODUCT_BUTTON')}</span>
-          <span className="flex sm:hidden">{t('NEW_BUTTON')}</span>
+          <span className="hidden sm:flex">Add New Product</span>
+          <span className="flex sm:hidden">New</span>
         </Button>
       </motion.div>
     </div>
   );
-}
+};
 
-export default ProductsHeader;
+export default InvoicesHeader;

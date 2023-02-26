@@ -4,7 +4,7 @@
 const authRoles = {
   sysAdmin: ['admin'],
   shopAdmin: ['shop-admin'],
-  shopStaff: ['shop-staff'],
+  shopStaff: ['shop-staff', 'shop-admin'],
   staff: ['admin', 'staff'],
   user: ['admin', 'staff', 'user'],
   onlyGuest: [],

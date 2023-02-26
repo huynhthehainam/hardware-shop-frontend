@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import reducer from './store';
 import ProductHeader from './ProductHeader';
 import BasicInfoTab from './create-update-product-tabs/BasicInfoTab';
-import { getProductById, setMode, setNewProduct } from './store/newUpdateProduct';
+import { getProductById, setMode, setNewProduct } from './store/newUpdateProductSlice';
 import ImagesTab from './create-update-product-tabs/ImagesTab';
 import PricingTab from './create-update-product-tabs/PricingTab';
 import InventoryTab from './create-update-product-tabs/InventoryTab';
@@ -62,7 +62,6 @@ const CreateOrUpdateProduct = () => {
     }
   }, [routeParams]);
   useEffect(() => {
-    console.log('reset');
     reset(product);
   }, [reset, product]);
   if (_.isEmpty(form)) {

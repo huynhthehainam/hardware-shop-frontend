@@ -71,7 +71,6 @@ class JwtService extends FuseUtils.EventEmitter {
           mainAxios
             .get(urlConfig.getCurrentUserAvatar, { responseType: 'blob' })
             .then((getAvatarResponse) => {
-              console.log(getAvatarResponse.data);
               user.data.photoURL = URL.createObjectURL(getAvatarResponse.data);
               this.convertRole(user);
               resolve(user);
@@ -82,7 +81,6 @@ class JwtService extends FuseUtils.EventEmitter {
         })
         .catch((e) => {
           const { error } = e.response.data;
-          console.log(error);
           reject(FuseUtils.convertToStandardError(error));
         });
     });
@@ -93,7 +91,6 @@ class JwtService extends FuseUtils.EventEmitter {
     if (user.shop) {
       user.role = [...user.role, `shop-${user.shop.role.toLowerCase()}`];
     }
-    console.log('convert role', user);
     return user;
   };
 

@@ -10,6 +10,33 @@ i18next.addResourceBundle('vi', 'navigation', vi);
 
 const navigationConfig = [
   {
+    id: 'manage-invoices',
+    title: 'Manage invoices',
+    translate: 'MANAGE_INVOICES',
+    type: 'collapse',
+    auth: authRoles.shopStaff,
+    children: [
+      {
+        id: 'invoices',
+        title: 'Invoices',
+        translate: 'INVOICES',
+        type: 'item',
+        url: '/apps/invoices',
+        exact: true,
+        auth: authRoles.shopStaff,
+      },
+      {
+        id: 'new-invoice',
+        title: 'New invoice',
+        translate: 'NEW_INVOICE',
+        type: 'item',
+        url: '/apps/invoice/new',
+        exact: true,
+        auth: authRoles.shopStaff,
+      },
+    ],
+  },
+  {
     id: 'manage-orders',
     title: 'Manage Orders',
     translate: 'MANAGE_ORDERS',
