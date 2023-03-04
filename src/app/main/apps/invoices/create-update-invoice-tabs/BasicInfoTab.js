@@ -3,12 +3,13 @@ import { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import constants from '../constants';
 import { getCustomers } from '../store/createUpdateInvoiceSlice';
 
 export default () => {
   const [isCustomersLoading, setIsCustomersLoading] = useState(true);
   const formContext = useFormContext();
-  const { control, setValue } = formContext;
+  const { control, setValue, getValues } = formContext;
   const dispatch = useDispatch();
   const customers = useSelector(({ invoices }) => invoices.createUpdateInvoice.customers);
   const shop = useSelector(({ auth }) => auth.user.shop);
@@ -19,6 +20,7 @@ export default () => {
     });
   }, [dispatch]);
   const { t } = useTranslation('invoices');
+  const mode = useSelector(({ invoices }) => invoices.createUpdateInvoice.mode);
   return (
     <div>
       <Controller
@@ -28,10 +30,17 @@ export default () => {
         render={({ field: { onChange, value } }) => (
           <Autocomplete
             loading={isCustomersLoading}
+            disabled={mode === constants.REVIEW_MODE}
             className="mt-8 mb-16"
             disablePortal
             getOptionLabel={(item) => {
-              return `${item.name} ${item.phone ? `| ${item.phone}` : ''}`;
+              let label = item.name;
+              if (item.phone) {
+                label += ` | ${item.phone}`;
+              } else if (item.address) {
+                label += ` | ${item.address}`;
+              }
+              return label;
             }}
             filterOptions={(options, state) => {
               const filteredOptions = [];
@@ -83,13 +92,13 @@ export default () => {
           <TextField
             disabled
             {...field}
+            value={field.value.toLocaleString()}
             className="mt-8 mb-16"
             label={t('DEBT_LABEL')}
             id="pricePerMass"
             InputProps={{
               startAdornment: <InputAdornment position="start">{shop.cashUnitName}</InputAdornment>,
             }}
-            type="number"
             variant="outlined"
             fullWidth
           />
@@ -101,13 +110,14 @@ export default () => {
         render={({ field }) => (
           <TextField
             {...field}
+            value={field.value.toLocaleString()}
+            disabled
             className="mt-8 mb-16"
             label={t('TOTAL_COST_LABEL')}
             id="pricePerMass"
             InputProps={{
               startAdornment: <InputAdornment position="start">{shop.cashUnitName}</InputAdornment>,
             }}
-            type="number"
             variant="outlined"
             fullWidth
           />
@@ -118,14 +128,46 @@ export default () => {
         control={control}
         render={({ field }) => (
           <TextField
-            {...field}
+            value={field.value.toLocaleString()}
+            inputMode="numeric"
+            disabled={mode === constants.REVIEW_MODE}
+            onChange={(ev) => {
+              let valueStr = ev.target.value;
+              valueStr = valueStr.replaceAll(',', '');
+              let value = parseFloat(valueStr);
+              if (!value) value = 0;
+              field.onChange(value);
+              const totalCost = getValues('totalCost');
+              const customerDebt = getValues('customerDebt');
+              const rest = totalCost + customerDebt - value;
+              setValue('rest', rest);
+            }}
             className="mt-8 mb-16"
             label={t('DEPOSIT_LABEL')}
             id="pricePerMass"
             InputProps={{
               startAdornment: <InputAdornment position="start">{shop.cashUnitName}</InputAdornment>,
             }}
-            type="number"
+            variant="outlined"
+            fullWidth
+          />
+        )}
+      />
+      <Controller
+        name="rest"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            value={field.value.toLocaleString()}
+            inputMode="numeric"
+            disabled
+            onChange={(e) => {}}
+            className="mt-8 mb-16"
+            label={t('REST_LABEL')}
+            id="pricePerMass"
+            InputProps={{
+              startAdornment: <InputAdornment position="start">{shop.cashUnitName}</InputAdornment>,
+            }}
             variant="outlined"
             fullWidth
           />

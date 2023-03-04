@@ -16,9 +16,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import reducer from './store';
 import BasicInfoTab from './create-update-invoice-tabs/BasicInfoTab';
 import constants from './constants';
-import { setMode, setNewInvoice } from './store/createUpdateInvoiceSlice';
+import { getInvoiceById, setMode, setNewInvoice } from './store/createUpdateInvoiceSlice';
 import DetailsTab from './create-update-invoice-tabs/DetailsTab';
 import CreateUpdateInvoiceHeader from './CreateUpdateInvoiceHeader';
+import PdfTab from './create-update-invoice-tabs/PdfTab';
 
 const Root = styled(FusePageCarded)(({ theme }) => ({
   '& .FusePageCarded-header': {
@@ -48,7 +49,9 @@ const CreateUpdateInvoice = () => {
       dispatch(setMode(constants.NEW_MODE));
       dispatch(setNewInvoice());
     } else {
-      dispatch(setMode(constants.UPDATE_MODE));
+      dispatch(setMode(constants.REVIEW_MODE));
+      console.log('get invoice', invoiceId);
+      dispatch(getInvoiceById(invoiceId));
     }
   }, [routeParams]);
   const formContext = useForm({
@@ -88,12 +91,34 @@ const CreateUpdateInvoice = () => {
           </Tabs>
         }
         content={
-          <div className="p-16 sm:p-24 max-w-3xl">
+          <div className="p-16 sm:p-24 max-w-2xl w-full">
             <div className={tab !== 0 ? 'hidden' : ''}>
               <BasicInfoTab />
             </div>
             <div className={tab !== 1 ? 'hidden' : ''}>
               <DetailsTab />
+            </div>
+            <div className={tab !== 2 ? 'hidden' : ''}>
+              <PdfTab
+                order={{
+                  reference: 'asfasf',
+                  date: '2023-02-23 14:14:14',
+                  customer: {
+                    firstName: 'fas',
+                    lastName: 'asf',
+                    invoiceAddress: {
+                      address: 'asfasf',
+                    },
+                    phone: 'fsaf',
+                    email: 'asfas',
+                  },
+                  products: [],
+                  subtotal: 12,
+                  tax: 233,
+                  discount: 123,
+                  total: 2424,
+                }}
+              />
             </div>
           </div>
         }

@@ -4,11 +4,12 @@ import IconButton from '@mui/material/IconButton';
 import { useSelector, useDispatch } from 'react-redux';
 import withReducer from 'app/store/withReducer';
 import reducer from './store';
-import { selectNotifications } from './store/dataSlice';
 import { toggleNotificationPanel } from './store/stateSlice';
 
 function NotificationPanelToggleButton(props) {
-  const notifications = useSelector(selectNotifications);
+  const notifications = useSelector(
+    ({ notificationPanel }) => notificationPanel.data.notifications
+  );
 
   const dispatch = useDispatch();
 

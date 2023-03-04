@@ -73,7 +73,17 @@ class JwtService extends FuseUtils.EventEmitter {
             .then((getAvatarResponse) => {
               user.data.photoURL = URL.createObjectURL(getAvatarResponse.data);
               this.convertRole(user);
-              resolve(user);
+              if (user.shop) {
+                mainAxios
+                  .get(urlConfig.getCurrentShopLogo, { responseType: 'blob' })
+                  .then((getLogoResponse) => {
+                    user.shop.logoUrl = URL.createObjectURL(getLogoResponse.data);
+                    resolve(user);
+                  })
+                  .catch((e) => {
+                    resolve(user);
+                  });
+              } else resolve(user);
             })
             .catch((e) => {
               resolve(data.user);
@@ -96,7 +106,6 @@ class JwtService extends FuseUtils.EventEmitter {
 
   signInWithToken = () => {
     return new Promise((resolve, reject) => {
-      console.log('sign in with token', this.getAccessToken());
       mainAxios
         .post(urlConfig.loginByToken, {
           token: this.getAccessToken(),
@@ -109,11 +118,19 @@ class JwtService extends FuseUtils.EventEmitter {
           mainAxios
             .get(urlConfig.getCurrentUserAvatar, { responseType: 'blob' })
             .then((getAvatarResponse) => {
-              console.log(getAvatarResponse.data);
               user.data.photoURL = URL.createObjectURL(getAvatarResponse.data);
-              console.log(user);
               user = this.convertRole(user);
-              resolve(user);
+              if (user.shop) {
+                mainAxios
+                  .get(urlConfig.getCurrentShopLogo, { responseType: 'blob' })
+                  .then((getLogoResponse) => {
+                    user.shop.logoUrl = URL.createObjectURL(getLogoResponse.data);
+                    resolve(user);
+                  })
+                  .catch((e) => {
+                    resolve(user);
+                  });
+              } else resolve(user);
             })
             .catch((e) => {
               resolve(data.user);

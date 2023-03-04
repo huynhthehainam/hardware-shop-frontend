@@ -417,6 +417,14 @@ class FuseUtils {
         });
     });
   }
+
+  static fieldChangeLocaleNumber(field, ev) {
+    let valueStr = ev.target.value;
+    valueStr = valueStr.replaceAll(',', '');
+    const value = parseFloat(valueStr);
+    if (value) field.onChange(value);
+    else field.onChange(0);
+  }
 }
 
 export default FuseUtils;

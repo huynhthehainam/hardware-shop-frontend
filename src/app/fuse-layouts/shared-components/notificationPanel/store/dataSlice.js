@@ -1,34 +1,85 @@
-import { createEntityAdapter, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import mainAxios, { urlConfig } from 'custom-axios';
+import _ from 'lodash';
 
-export const getNotifications = createAsyncThunk('notificationPanel/data/getData', async () => {
-  const response = await axios.get('/api/notification-panel/data');
-  const data = await response.data;
+export const getNotifications = createAsyncThunk(
+  'notificationPanel/data/getData',
+  (data, { dispatch, getState }) => {
+    return new Promise((resolve, reject) => {
+      mainAxios.get(urlConfig.getUserNotifications).then((resp) => {
+        dispatch(setNotifications(resp.data.data));
+      });
+    });
+  }
+);
 
-  return data;
-});
+export const createNotification = createAsyncThunk(
+  'notificationPanel/data/createNotification',
+  ({ message, options, translation, translationParams }, { dispatch, getState }) => {
+    return new Promise((resolve, reject) => {
+      const { variant } = options;
+      console.log('create noti api', translation, message, translationParams);
+      mainAxios
+        .post(urlConfig.createUserNotification, {
+          message,
+          variant,
+          translation,
+          translationParams,
+        })
+        .then((resp) => {
+          const { id } = resp.data.data;
+          let { notifications } = getState().notificationPanel.data;
+          notifications = [...notifications, { id, message, options }];
+          dispatch(setNotifications(notifications));
+          resolve();
+        });
+    });
+  }
+);
 
-const notificationsAdapter = createEntityAdapter({});
+export const dismissNotification = createAsyncThunk(
+  'notificationPanel/data/createNotification',
+  (id, { dispatch, getState }) => {
+    return new Promise((resolve, reject) => {
+      mainAxios.post(urlConfig.dismissUserNotificationById(id)).then((resp) => {
+        const { notifications } = getState().notificationPanel.data;
 
-const initialState = notificationsAdapter.upsertMany(notificationsAdapter.getInitialState(), []);
+        const newNotifications = [...notifications];
+        _.remove(newNotifications, (e) => e.id === id);
 
-export const { selectAll: selectNotifications, selectById: selectNotificationsById } =
-  notificationsAdapter.getSelectors((state) => state.notificationPanel.data);
+        dispatch(setNotifications(newNotifications));
+        resolve();
+      });
+    });
+  }
+);
+
+export const dismissAllNotification = createAsyncThunk(
+  'notificationPanel/data/dismissAllNotification',
+  (data, { dispatch, getState }) => {
+    return new Promise((resolve, reject) => {
+      mainAxios.post(urlConfig.dismissAllUserNotifications).then((resp) => {
+        dispatch(setNotifications([]));
+        resolve();
+      });
+    });
+  }
+);
+
+const initialState = {
+  notifications: [],
+};
 
 const dataSlice = createSlice({
   name: 'notificationPanel/data',
   initialState,
   reducers: {
-    dismissItem: (state, action) => notificationsAdapter.removeOne(state, action.payload),
-    dismissAll: (state, action) => notificationsAdapter.removeAll(state),
-    addNotification: (state, action) => notificationsAdapter.addOne(state, action.payload),
-  },
-  extraReducers: {
-    [getNotifications.fulfilled]: (state, action) =>
-      notificationsAdapter.addMany(state, action.payload),
+    setNotifications: (state, action) => {
+      state.notifications = action.payload;
+    },
   },
 });
 
-export const { dismissItem, dismissAll, addNotification } = dataSlice.actions;
+export const { dismissItem, dismissAll, addNotification, setNotifications } = dataSlice.actions;
 
 export default dataSlice.reducer;

@@ -10,7 +10,9 @@ import _ from '@lodash';
 import { useTranslation } from 'react-i18next';
 import { LoadingButton } from '@mui/lab';
 import { useState } from 'react';
+import useNotification from '@fuse/hooks/useNotification';
 import constants from './constants';
+import { createInvoice } from './store/createUpdateInvoiceSlice';
 
 export default () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,7 +25,41 @@ export default () => {
   const theme = useTheme();
   const history = useHistory();
   const mode = useSelector(({ invoices }) => invoices.createUpdateInvoice.mode);
-  function handleSaveProduct() {}
+  const { showNotification } = useNotification();
+  function handleSaveProduct() {
+    const data = getValues();
+    if (mode === constants.UPDATE_MODE) {
+      console.log('update');
+    } else {
+      setIsSubmitting(true);
+      const validatedData = {
+        customerId: data.customer.id,
+        deposit: data.deposit,
+        details: data.details.map((item) => {
+          return {
+            productId: item.productId,
+            quantity: item.quantity,
+            price: item.price,
+            description: item.description,
+            originalPrice: item.originalPrice,
+          };
+        }),
+      };
+      console.log('validated data', validatedData);
+      dispatch(createInvoice(validatedData))
+        .then(() => {
+          setIsSubmitting(false);
+          showNotification({
+            translation: 'CREATE_SUCCESSFULLY',
+            options: { variant: 'success' },
+          });
+          history.push('/apps/invoices');
+        })
+        .catch((e) => {
+          setIsSubmitting(false);
+        });
+    }
+  }
 
   function handleRemoveProduct() {}
 
@@ -77,16 +113,18 @@ export default () => {
             {t('REMOVE_BUTTON')}
           </Button>
         )}
-        <LoadingButton
-          className="whitespace-nowrap mx-4"
-          variant="contained"
-          loading={isSubmitting}
-          color="secondary"
-          disabled={_.isEmpty(dirtyFields) || !isValid}
-          onClick={handleSaveProduct}
-        >
-          {t('SAVE_BUTTON')}
-        </LoadingButton>
+        {(mode === constants.UPDATE_MODE || mode === constants.NEW_MODE) && (
+          <LoadingButton
+            className="whitespace-nowrap mx-4"
+            variant="contained"
+            loading={isSubmitting}
+            color="secondary"
+            disabled={_.isEmpty(dirtyFields) || !isValid}
+            onClick={handleSaveProduct}
+          >
+            {t('SAVE_BUTTON')}
+          </LoadingButton>
+        )}
       </motion.div>
     </div>
   );

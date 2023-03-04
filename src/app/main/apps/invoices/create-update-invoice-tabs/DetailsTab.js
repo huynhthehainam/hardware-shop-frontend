@@ -15,6 +15,7 @@ import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProducts } from '../store/createUpdateInvoiceSlice';
+import constants from '../constants';
 
 const Detail = (props) => {
   const { index } = props;
@@ -22,6 +23,7 @@ const Detail = (props) => {
   const { control, watch, getValues, setValue } = formContext;
   const { t } = useTranslation('invoices');
   const shop = useSelector(({ auth }) => auth.user.shop);
+  const mode = useSelector(({ invoices }) => invoices.createUpdateInvoice.mode);
   const totalCostDebounce = useDebounce((totalCost) => {
     FuseUtils.convertUnitValue(shop.cashUnitId, totalCost).then((newValue) => {
       setValue(`details.${index}.totalCost`, newValue);
@@ -31,6 +33,12 @@ const Detail = (props) => {
         globalCost += detail.totalCost;
       });
       setValue(`totalCost`, globalCost);
+      const deposit = getValues('deposit');
+      const customerDebt = getValues('customerDebt');
+
+      const rest = globalCost + customerDebt - deposit;
+
+      setValue('rest', rest);
     });
   }, 500);
   return (
@@ -58,13 +66,17 @@ const Detail = (props) => {
           control={control}
           render={({ field }) => (
             <TextField
-              value={field.value}
+              value={field.value.toLocaleString()}
+              disabled={mode === constants.REVIEW_MODE}
               onChange={(e) => {
-                const { value } = e.target;
+                let valueStr = e.target.value;
+                valueStr = valueStr.replaceAll(',', '');
+                let value = parseFloat(valueStr);
+                if (!value) value = 0;
                 field.onChange(value);
                 const priceStr = getValues(`details.${index}.price`);
                 const price = parseFloat(priceStr);
-                const quantity = parseFloat(value);
+                const quantity = value;
                 const totalCost = price * quantity;
                 if (totalCost) {
                   totalCostDebounce(totalCost);
@@ -87,12 +99,18 @@ const Detail = (props) => {
           render={({ field }) => (
             <TextField
               {...field}
-              onChange={(e) => {
-                const { value } = e.target;
+              value={field.value.toLocaleString()}
+              inputMode="numeric"
+              disabled={mode === constants.REVIEW_MODE}
+              onChange={(ev) => {
+                let valueStr = ev.target.value;
+                valueStr = valueStr.replaceAll(',', '');
+                let value = parseFloat(valueStr);
+                if (!value) value = 0;
                 field.onChange(value);
                 const quantityStr = getValues(`details.${index}.quantity`);
                 const quantity = parseFloat(quantityStr);
-                const price = parseFloat(value);
+                const price = value;
                 const totalCost = price * quantity;
 
                 if (totalCost) {
@@ -108,7 +126,6 @@ const Detail = (props) => {
                   <InputAdornment position="start">{shop.cashUnitName}</InputAdornment>
                 ),
               }}
-              type="number"
               variant="outlined"
             />
           )}
@@ -119,6 +136,8 @@ const Detail = (props) => {
           render={({ field }) => (
             <TextField
               {...field}
+              value={field.value.toLocaleString()}
+              inputMode="numeric"
               disabled
               className="mt-8 mb-16 w-full"
               label={t('TOTAL_COST_LABEL')}
@@ -128,7 +147,6 @@ const Detail = (props) => {
                   <InputAdornment position="start">{shop.cashUnitName}</InputAdornment>
                 ),
               }}
-              type="number"
               variant="outlined"
             />
           )}
@@ -140,6 +158,7 @@ const Detail = (props) => {
         render={({ field }) => (
           <TextField
             {...field}
+            disabled={mode === constants.REVIEW_MODE}
             className="mt-8 mb-16 mx-4 flex-1"
             id="description"
             label={t('DESCRIPTION_LABEL')}
@@ -151,6 +170,21 @@ const Detail = (props) => {
           />
         )}
       />
+      {mode !== constants.REVIEW_MODE && (
+        <div className="flex flex-col w-1/9 mx-4 items-center justify-center">
+          <Button
+            className="whitespace-nowrap mx-8 mt-8 mb-16"
+            variant="contained"
+            color="error"
+            onClick={() => {
+              props.handleRemoveRow(index);
+            }}
+            startIcon={<Icon className="hidden sm:flex">delete</Icon>}
+          >
+            {t('REMOVE_BUTTON')}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
@@ -162,6 +196,7 @@ export default () => {
   const { append, remove, fields } = useFieldArray({ control, name: 'details' });
   const { t } = useTranslation('invoices');
   const products = useSelector(({ invoices }) => invoices.createUpdateInvoice.products);
+  const mode = useSelector(({ invoices }) => invoices.createUpdateInvoice.mode);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getProducts()).then(() => {
@@ -185,6 +220,7 @@ export default () => {
         <Autocomplete
           className="mt-8 mb-16 flex-1"
           disablePortal
+          disabled={mode === constants.REVIEW_MODE}
           options={[...products]}
           value={selectedProduct}
           onChange={(event, newValue) => {
@@ -200,7 +236,7 @@ export default () => {
               placeholder={t('SELECT_PRODUCT_PLACE_HOLDER')}
               label={t('PRODUCT_LABEL')}
               variant="outlined"
-              inputLabelProps={{
+              InputLabelProps={{
                 shrink: true,
               }}
               InputProps={{
@@ -215,32 +251,35 @@ export default () => {
             />
           )}
         />
-        <Button
-          className="whitespace-nowrap mx-8 mt-8 mb-16"
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            if (selectedProduct) {
-              console.log('select', selectedProduct);
-              if (!_.find(fields, (e) => e.productId === selectedProduct.id)) {
-                append({
-                  productId: selectedProduct.id,
-                  description: '',
-                  quantity: 0,
-                  originalPrice: selectedProduct.originalPrice,
-                  price: customer.isFamiliar
-                    ? selectedProduct.priceForFamiliarCustomer
-                    : selectedProduct.priceForCustomer,
-                  productName: `${selectedProduct.name} | ${selectedProduct.unitName}`,
-                  totalCost: 0.0,
-                });
+        {mode !== constants.REVIEW_MODE && (
+          <Button
+            className="whitespace-nowrap mx-8 mt-8 mb-16"
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              if (selectedProduct) {
+                console.log('select', selectedProduct);
+                if (!_.find(fields, (e) => e.productId === selectedProduct.id)) {
+                  append({
+                    productId: selectedProduct.id,
+                    description: '',
+                    quantity: 0,
+                    originalPrice: selectedProduct.originalPrice ?? 0,
+                    price:
+                      customer.isFamiliar && selectedProduct.priceForFamiliarCustomer
+                        ? selectedProduct.priceForFamiliarCustomer
+                        : selectedProduct.priceForCustomer,
+                    productName: `${selectedProduct.name} | ${selectedProduct.unitName}`,
+                    totalCost: 0.0,
+                  });
+                }
               }
-            }
-          }}
-          startIcon={<Icon className="hidden sm:flex">add</Icon>}
-        >
-          {t('ADD_BUTTON')}
-        </Button>
+            }}
+            startIcon={<Icon className="hidden sm:flex">add</Icon>}
+          >
+            {t('ADD_BUTTON')}
+          </Button>
+        )}
       </div>
 
       {fields.map((item, index) => (

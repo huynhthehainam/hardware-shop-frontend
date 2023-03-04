@@ -17,88 +17,64 @@ import { useTranslation } from 'react-i18next';
 
 const rows = [
   {
-    id: 'image',
+    id: 'customerName',
     align: 'left',
-    disablePadding: true,
-    label: '',
-    sort: false,
-  },
-  {
-    id: 'name',
-    align: 'right',
     disablePadding: false,
-    translate: 'NAME_LABEL',
+    translate: 'CUSTOMER_NAME_LABEL',
     label: 'Name',
-    sort: true,
   },
   {
-    id: 'categories',
+    id: 'customerPhone',
     align: 'left',
     disablePadding: false,
     label: 'Categories',
-    translate: 'CATEGORIES_LABEL',
+    translate: 'CUSTOMER_PHONE_LABEL',
     sort: false,
   },
   {
-    id: 'unit',
-    align: 'center',
+    id: 'customerAddress',
+    align: 'left',
     disablePadding: false,
     label: 'Unit',
-    translate: 'UNIT_LABEL',
+    translate: 'CUSTOMER_ADDRESS_LABEL',
     sort: false,
   },
   {
-    id: 'mass',
-    align: 'right',
+    id: 'code',
+    align: 'center',
     disablePadding: false,
     label: 'Price',
-    translate: 'MASS_LABEL',
+    translate: 'INVOICE_CODE_LABEL',
     sort: true,
   },
   {
-    id: 'pricePerMass',
+    id: 'createdDate',
+    align: 'center',
+    disablePadding: false,
+    label: 'Price',
+    translate: 'CREATED_DATE_LABEL',
+    sort: true,
+  },
+  {
+    id: 'totalCost',
     align: 'right',
     disablePadding: false,
     label: 'Price per mass',
-    translate: 'PRICE_PER_MASS_LABEL',
+    translate: 'TOTAL_COST_LABEL',
     sort: true,
   },
   {
-    id: 'percentForFamiliarCustomer',
+    id: 'deposit',
     align: 'right',
     disablePadding: false,
     label: 'Percent for familiar customer',
-    translate: 'PERCENT_FOR_FAMILIAR_CUSTOMER_LABEL',
-    sort: true,
-  },
-  {
-    id: 'percentForCustomer',
-    align: 'right',
-    disablePadding: false,
-    label: 'Percent for familiar customer',
-    translate: 'PERCENT_FOR_CUSTOMER_LABEL',
-    sort: true,
-  },
-  {
-    id: 'priceForFamiliarCustomer',
-    align: 'right',
-    disablePadding: false,
-    label: 'Price',
-    translate: 'PRICE_FOR_FAMILIAR_CUSTOMER_LABEL',
-    sort: true,
-  },
-  {
-    id: 'priceForCustomer',
-    align: 'right',
-    disablePadding: false,
-    label: 'Price',
-    translate: 'PRICE_FOR_CUSTOMER_LABEL',
+    translate: 'DEPOSIT_LABEL',
     sort: true,
   },
 ];
 
 function InvoicesTableHead(props) {
-  const { t } = useTranslation('products');
+  const { t } = useTranslation('invoices');
   const { selectedProductIds } = props;
   const numSelected = selectedProductIds.length;
 

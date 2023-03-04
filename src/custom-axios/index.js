@@ -21,5 +21,13 @@ export const urlConfig = {
   updateProductById: (id) => `/api/products/${id}/update`,
   getCustomers: '/api/customers',
   updateCurrentUserInterfaceConfig: '/api/users/me/updateInterfaceSettings',
+  createInvoice: '/api/invoices',
+  getCurrentShopLogo: '/api/shops/yourShop/Logo',
+  getInvoices: '/api/invoices',
+  getUserNotifications: '/api/users/me/notifications',
+  createUserNotification: '/api/users/me/notifications',
+  dismissUserNotificationById: (id) => `/api/users/me/notifications/${id}/dismiss`,
+  dismissAllUserNotifications: '/api/users/me/dismissAllNotifications',
+  getInvoiceById: (id) => `/api/invoices/${id}`,
 };
 export default mainAxios;

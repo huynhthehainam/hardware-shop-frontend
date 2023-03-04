@@ -3,15 +3,18 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { selectMainTheme } from 'app/store/fuse/settingsSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { setInvoiceSearchText } from './store/invoicesSlice';
+import { Link } from 'react-router-dom';
+import { getInvoices, setInvoiceSearchText } from './store/invoicesSlice';
 
-const { Icon, Typography, ThemeProvider, Paper, Link, Button, Input } = require('@mui/material');
+const { Icon, Typography, ThemeProvider, Paper, Button, Input } = require('@mui/material');
 
 const InvoicesHeader = () => {
   const { t } = useTranslation('invoices');
   const searchText = useSelector(({ invoices }) => invoices.invoices.searchText);
   const dispatch = useDispatch();
-  const debounce = useDebounce((e) => {}, 500);
+  const debounce = useDebounce((e) => {
+    dispatch(getInvoices());
+  }, 500);
   const handleSearchChanged = (ev) => {
     dispatch(setInvoiceSearchText(ev.target.value ?? ''));
     debounce(ev);
@@ -71,13 +74,13 @@ const InvoicesHeader = () => {
       >
         <Button
           component={Link}
-          to="/apps/e-commerce/products/new"
+          to="/apps/invoice/new"
           className="whitespace-nowrap"
           variant="contained"
           color="secondary"
         >
-          <span className="hidden sm:flex">Add New Product</span>
-          <span className="flex sm:hidden">New</span>
+          <span className="hidden sm:flex">{t('ADD_NEW_INVOICE_BUTTON')}</span>
+          <span className="flex sm:hidden">{t('ADD_NEW_BUTTON')}</span>
         </Button>
       </motion.div>
     </div>

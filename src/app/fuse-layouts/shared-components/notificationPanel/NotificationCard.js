@@ -3,6 +3,7 @@ import Icon from '@mui/material/Icon';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 import NotificationIcon from './NotificationIcon';
 
 function NotificationCard(props) {
@@ -14,7 +15,7 @@ function NotificationCard(props) {
       props.onClose(item.id);
     }
   };
-
+  const { t } = useTranslation('notificationPanel');
   return (
     <Card
       className={clsx(
@@ -28,7 +29,9 @@ function NotificationCard(props) {
       elevation={0}
     >
       <NotificationIcon value={variant} />
-      <Typography component="div">{item.message}</Typography>
+      <Typography component="div">
+        {item.message ?? t(item.translation, item.translationParams)}
+      </Typography>
       <IconButton
         disableRipple
         className="top-0 right-0 absolute p-8"

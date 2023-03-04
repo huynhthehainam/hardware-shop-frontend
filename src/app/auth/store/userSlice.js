@@ -95,7 +95,6 @@ export const setUserData = (user) => async (dispatch, getState) => {
 export const updateUserSettings = (settings) => async (dispatch, getState) => {
   const oldUser = getState().auth.user;
   const user = _.merge({}, oldUser, { data: { settings } });
-  console.log('new user', user);
   dispatch(updateUserData(user));
   await mainAxios.post(urlConfig.updateCurrentUserInterfaceConfig, { settings });
 

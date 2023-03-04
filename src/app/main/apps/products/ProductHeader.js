@@ -10,8 +10,7 @@ import _ from '@lodash';
 import { useTranslation } from 'react-i18next';
 import { LoadingButton } from '@mui/lab';
 import { useState } from 'react';
-import { addNotification } from 'app/fuse-layouts/shared-components/notificationPanel/store/dataSlice';
-import NotificationModel from 'app/fuse-layouts/shared-components/notificationPanel/model/NotificationModel';
+import useNotification from '@fuse/hooks/useNotification';
 import { createProduct, updateProduct } from './store/newUpdateProductSlice';
 import constants from './constants';
 
@@ -28,6 +27,7 @@ function ProductHeader(props) {
   const theme = useTheme();
   const history = useHistory();
   const mode = useSelector(({ products }) => products.newUpdateProduct.mode);
+  const { showNotification } = useNotification();
   function handleSaveProduct() {
     const data = getValues();
     data.categoryIds = data.categories.map((e) => e.id);
@@ -52,14 +52,11 @@ function ProductHeader(props) {
         }),
       };
       dispatch(updateProduct(validatedData)).then((resp) => {
-        dispatch(
-          addNotification(
-            NotificationModel({
-              message: t('UPDATE_SUCCESSFULLY'),
-              options: { variant: 'success' },
-            })
-          )
-        );
+        showNotification({
+          translation: 'UPDATE_SUCCESSFULLY',
+          options: { variant: 'success' },
+        });
+
         setIsSubmitting(false);
         history.push({ pathname: '/apps/products' });
       });
