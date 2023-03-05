@@ -51,6 +51,7 @@ export const getInvoiceById = createAsyncThunk(
       mainAxios.get(urlConfig.getInvoiceById(id)).then((resp) => {
         const { data } = resp.data;
         const invoice = {
+          id: data.id,
           customer: {
             id: data.customerId,
             name: data.customerName,
@@ -76,6 +77,18 @@ export const getInvoiceById = createAsyncThunk(
           }),
         };
         dispatch(setInvoice(invoice));
+        resolve();
+      });
+    });
+  }
+);
+
+export const restoreInvoiceById = createAsyncThunk(
+  'invoices/createUpdateInvoice/restoreInvoiceById',
+  (id, { dispatch, getState }) => {
+    return new Promise((resolve, reject) => {
+      mainAxios.post(urlConfig.restoreInvoiceById(id)).then((resp) => {
+        dispatch(setMode(constants.NEW_MODE));
         resolve();
       });
     });

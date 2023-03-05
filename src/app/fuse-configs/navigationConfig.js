@@ -36,22 +36,22 @@ const navigationConfig = [
       },
     ],
   },
-  {
-    id: 'manage-orders',
-    title: 'Manage Orders',
-    translate: 'MANAGE_ORDERS',
-    type: 'collapse',
-    children: [
-      {
-        id: 'orders',
-        title: 'Orders',
-        translate: 'ORDERS',
-        type: 'item',
-        url: '/apps/orders',
-        exact: true,
-      },
-    ],
-  },
+  // {
+  //   id: 'manage-orders',
+  //   title: 'Manage Orders',
+  //   translate: 'MANAGE_ORDERS',
+  //   type: 'collapse',
+  //   children: [
+  //     {
+  //       id: 'orders',
+  //       title: 'Orders',
+  //       translate: 'ORDERS',
+  //       type: 'item',
+  //       url: '/apps/orders',
+  //       exact: true,
+  //     },
+  //   ],
+  // },
   {
     id: 'manage-products',
     title: 'Products',

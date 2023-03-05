@@ -32,5 +32,9 @@ const locale = {
   CUSTOMER_ADDRESS_LABEL: 'Địa chỉ',
   CREATED_DATE_LABEL: 'Ngày tạo',
   INVOICE_CODE_LABEL: 'Mã',
+  RESTORE_BUTTON: 'Khôi phục',
+  CUSTOMER_IS_FAMILIAR_LABEL: 'Khách quen',
+  CANCEL_BUTTON: 'Huỷ',
+  CREATE_CUSTOMER_TITLE: 'Thêm khách hàng {{name}}',
 };
 export default locale;

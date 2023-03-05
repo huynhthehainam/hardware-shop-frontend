@@ -1,4 +1,3 @@
-import Button from '@mui/material/Button';
 import Icon from '@mui/material/Icon';
 import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
@@ -6,16 +5,16 @@ import { motion } from 'framer-motion';
 import { useFormContext } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
-import _ from '@lodash';
 import { useTranslation } from 'react-i18next';
 import { LoadingButton } from '@mui/lab';
 import { useState } from 'react';
 import useNotification from '@fuse/hooks/useNotification';
 import constants from './constants';
-import { createInvoice } from './store/createUpdateInvoiceSlice';
+import { createInvoice, restoreInvoiceById } from './store/createUpdateInvoiceSlice';
 
 export default () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRestoreSubmitting, setIsRestoreSubmitting] = useState(false);
   const dispatch = useDispatch();
   const methods = useFormContext();
   const { formState, watch, getValues, handleSubmit } = methods;
@@ -26,7 +25,7 @@ export default () => {
   const history = useHistory();
   const mode = useSelector(({ invoices }) => invoices.createUpdateInvoice.mode);
   const { showNotification } = useNotification();
-  function handleSaveProduct() {
+  function handleCreateInvoice() {
     const data = getValues();
     if (mode === constants.UPDATE_MODE) {
       console.log('update');
@@ -61,7 +60,13 @@ export default () => {
     }
   }
 
-  function handleRemoveProduct() {}
+  function handleRestoreInvoice() {
+    const data = getValues();
+    setIsRestoreSubmitting(true);
+    dispatch(restoreInvoiceById(data.id)).then(() => {
+      setIsRestoreSubmitting(false);
+    });
+  }
 
   return (
     <div className="flex flex-1 w-full items-center justify-between">
@@ -102,16 +107,17 @@ export default () => {
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0, transition: { delay: 0.3 } }}
       >
-        {mode === constants.UPDATE_MODE && (
-          <Button
+        {mode === constants.REVIEW_MODE && (
+          <LoadingButton
             className="whitespace-nowrap mx-4"
             variant="contained"
-            color="error"
-            onClick={handleRemoveProduct}
-            startIcon={<Icon className="hidden sm:flex">delete</Icon>}
+            loading={isRestoreSubmitting}
+            color="warning"
+            onClick={handleRestoreInvoice}
+            startIcon={<Icon className="hidden sm:flex">restore</Icon>}
           >
-            {t('REMOVE_BUTTON')}
-          </Button>
+            {t('RESTORE_BUTTON')}
+          </LoadingButton>
         )}
         {(mode === constants.UPDATE_MODE || mode === constants.NEW_MODE) && (
           <LoadingButton
@@ -119,8 +125,8 @@ export default () => {
             variant="contained"
             loading={isSubmitting}
             color="secondary"
-            disabled={_.isEmpty(dirtyFields) || !isValid}
-            onClick={handleSaveProduct}
+            disabled={!isValid}
+            onClick={handleCreateInvoice}
           >
             {t('SAVE_BUTTON')}
           </LoadingButton>

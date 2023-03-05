@@ -29,7 +29,10 @@ export const createNotification = createAsyncThunk(
         .then((resp) => {
           const { id } = resp.data.data;
           let { notifications } = getState().notificationPanel.data;
-          notifications = [...notifications, { id, message, options }];
+          notifications = [
+            ...notifications,
+            { id, message, options, translation, translationParams },
+          ];
           dispatch(setNotifications(notifications));
           resolve();
         });
