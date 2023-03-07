@@ -13,7 +13,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import { getCustomers } from '../store/createUpdateInvoiceSlice';
+import { createCustomer, getCustomers } from '../store/createUpdateInvoiceSlice';
 import constants from '../constants';
 
 const schema = yup.object().shape({
@@ -44,7 +44,10 @@ const CreateCustomerDialog = (props) => {
   }, [customerName, reset]);
   const handleSaveCustomer = () => {
     const data = getValues();
-    console.log('create customer', data);
+    dispatch(createCustomer(data)).then(() => {
+      dispatch(closeDialog());
+      props.onCustomerCreated();
+    });
   };
   const name = watch('name');
   return (
@@ -148,6 +151,11 @@ export default () => {
   const customers = useSelector(({ invoices }) => invoices.createUpdateInvoice.customers);
   const shop = useSelector(({ auth }) => auth.user.shop);
 
+  const onCustomerCreated = () => {
+    dispatch(getCustomers()).then(() => {
+      setIsCustomersLoading(false);
+    });
+  };
   useEffect(() => {
     dispatch(getCustomers()).then(() => {
       setIsCustomersLoading(false);
@@ -186,11 +194,10 @@ export default () => {
                 }
               });
               if (inputValue !== '' && filteredOptions.length === 0) {
-                console.log('add item', inputValue);
                 filteredOptions.push({
                   id: 0,
                   inputValue,
-                  name: `Add "${inputValue}"`,
+                  name: `${t('ADD_BUTTON')} "${inputValue}"`,
                 });
               }
               return filteredOptions;
@@ -206,7 +213,12 @@ export default () => {
               if (newValue.id === 0) {
                 dispatch(
                   openDialog({
-                    children: <CreateCustomerDialog customerName={newValue.inputValue} />,
+                    children: (
+                      <CreateCustomerDialog
+                        customerName={newValue.inputValue}
+                        onCustomerCreated={onCustomerCreated}
+                      />
+                    ),
                   })
                 );
               } else {

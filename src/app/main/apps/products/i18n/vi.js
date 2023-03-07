@@ -28,6 +28,7 @@ const locale = {
   PRODUCTS_HEADER: 'Sản phẩm',
   ADD_NEW_PRODUCT_BUTTON: 'Thêm sản phẩm',
   NEW_BUTTON: 'Thêm',
+  CALCULATE_BUTTON: 'Tính toán',
 };
 
 export default locale;

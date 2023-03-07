@@ -8,5 +8,6 @@ const locale = {
   MANAGE_INVOICES: 'Quản lý hoá đơn',
   INVOICES: 'Danh sách hoá đơn',
   NEW_INVOICE: 'Tạo hoá đơn',
+  CUSTOMERS: 'Danh sách khách hàng',
 };
 export default locale;

@@ -53,6 +53,15 @@ const navigationConfig = [
   //   ],
   // },
   {
+    id: 'customer-list',
+    title: 'Customers',
+    translate: 'CUSTOMERS',
+    type: 'item',
+    url: '/apps/customers',
+    exact: true,
+    auth: authRoles.shopAdmin,
+  },
+  {
     id: 'manage-products',
     title: 'Products',
     translate: 'MANAGE_PRODUCTS',

@@ -30,5 +30,6 @@ export const urlConfig = {
   dismissAllUserNotifications: '/api/users/me/dismissAllNotifications',
   getInvoiceById: (id) => `/api/invoices/${id}`,
   restoreInvoiceById: (id) => `/api/invoices/${id}/restore`,
+  createCustomer: '/api/customers',
 };
 export default mainAxios;

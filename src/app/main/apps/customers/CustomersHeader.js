@@ -6,25 +6,25 @@ import { ThemeProvider } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { motion } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { selectMainTheme } from 'app/store/fuse/settingsSlice';
 import { useDebounce } from '@fuse/hooks';
 import { useTranslation } from 'react-i18next';
-import { setProductsSearchText, getProducts, setPage } from './store/productsSlice';
+import { setSearchText, getCustomers, setPage } from './store/customersSlice';
 
-function ProductsHeader() {
+function CustomersHeader() {
   const dispatch = useDispatch();
-  const searchText = useSelector((state) => state.products.products.searchText);
+  const searchText = useSelector((state) => state.customers.customers.searchText);
   const mainTheme = useSelector(selectMainTheme);
-  const { t } = useTranslation('products');
+  const { t } = useTranslation('customers');
   const debounce = useDebounce((e) => {
     dispatch(setPage(0));
-    dispatch(getProducts({ search: e.target.value }));
+    dispatch(getCustomers());
   }, 500);
   const handleSearchChanged = (ev) => {
-    dispatch(setProductsSearchText(ev.target.value ?? ''));
+    dispatch(setSearchText(ev.target.value ?? ''));
     debounce(ev);
   };
+  const handleCreateCustomer = () => {};
   return (
     <div className="flex flex-1 w-full items-center justify-between">
       <div className="flex items-center">
@@ -34,7 +34,7 @@ function ProductsHeader() {
           animate={{ scale: 1, transition: { delay: 0.2 } }}
           className="text-24 md:text-32"
         >
-          shopping_basket
+          perm_contact_calendar
         </Icon>
         <Typography
           component={motion.span}
@@ -43,7 +43,7 @@ function ProductsHeader() {
           delay={300}
           className="hidden sm:flex text-16 md:text-24 mx-12 font-semibold"
         >
-          {t('PRODUCTS_HEADER')}
+          {t('CUSTOMERS_HEADER')}
         </Typography>
       </div>
 
@@ -58,7 +58,7 @@ function ProductsHeader() {
             <Icon color="action">search</Icon>
 
             <Input
-              placeholder="Search"
+              placeholder={t('SEARCH')}
               className="flex flex-1 mx-8"
               disableUnderline
               fullWidth
@@ -76,18 +76,17 @@ function ProductsHeader() {
         animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}
       >
         <Button
-          component={Link}
-          to="/apps/product/new"
-          className="whitespace-nowrap"
+          className="whitespace-nowrap mx-4"
           variant="contained"
           color="secondary"
+          onClick={handleCreateCustomer}
+          startIcon={<Icon className="hidden sm:flex">add</Icon>}
         >
-          <span className="hidden sm:flex">{t('ADD_NEW_PRODUCT_BUTTON')}</span>
-          <span className="flex sm:hidden">{t('NEW_BUTTON')}</span>
+          {t('CREATE_BUTTON')}
         </Button>
       </motion.div>
     </div>
   );
 }
 
-export default ProductsHeader;
+export default CustomersHeader;

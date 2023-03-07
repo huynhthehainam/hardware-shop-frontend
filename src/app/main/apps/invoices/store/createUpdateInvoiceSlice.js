@@ -28,6 +28,17 @@ export const getProducts = createAsyncThunk(
   }
 );
 
+export const createCustomer = createAsyncThunk(
+  'invoices/createUpdateInvoice/createCustomer',
+  (data, { dispatch }) => {
+    return new Promise((resolve, reject) => {
+      mainAxios.post(urlConfig.createCustomer, data).then((resp) => {
+        resolve();
+      });
+    });
+  }
+);
+
 export const createInvoice = createAsyncThunk(
   'invoices/createUpdateInvoice/createInvoice',
   (data, { dispatch, getState }) => {

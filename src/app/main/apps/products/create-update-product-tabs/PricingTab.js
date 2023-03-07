@@ -125,7 +125,7 @@ function PricingTab() {
                     loadingPosition="end"
                     variant="contained"
                   >
-                    Calculate
+                    {t('CALCULATE_BUTTON')}
                   </LoadingButton>
                 </InputAdornment>
               ),
@@ -177,7 +177,7 @@ function PricingTab() {
                     loadingPosition="end"
                     variant="contained"
                   >
-                    Calculate
+                    {t('CALCULATE_BUTTON')}
                   </LoadingButton>
                 </InputAdornment>
               ),
