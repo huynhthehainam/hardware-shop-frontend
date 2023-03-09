@@ -31,6 +31,7 @@ export const getProducts = createAsyncThunk(
 export const createCustomer = createAsyncThunk(
   'invoices/createUpdateInvoice/createCustomer',
   (data, { dispatch }) => {
+    if (data.phone && data.phone !== '') data.phone = `+84${data.phone}`;
     return new Promise((resolve, reject) => {
       mainAxios.post(urlConfig.createCustomer, data).then((resp) => {
         resolve();

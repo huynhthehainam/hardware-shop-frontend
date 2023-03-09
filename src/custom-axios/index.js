@@ -31,5 +31,6 @@ export const urlConfig = {
   getInvoiceById: (id) => `/api/invoices/${id}`,
   restoreInvoiceById: (id) => `/api/invoices/${id}/restore`,
   createCustomer: '/api/customers',
+  getCountries: '/api/countries',
 };
 export default mainAxios;

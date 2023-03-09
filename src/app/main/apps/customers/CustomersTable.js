@@ -4,8 +4,10 @@ import FuseLoading from '@fuse/core/FuseLoading';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { getCustomers, setOrder, setPage, setRowsPerPage } from './store/customersSlice';
+import { openDialog } from 'app/store/fuse/dialogSlice';
 import CustomersTableHead from './CustomersTableHead';
+import { getCustomers, setOrder, setPage, setRowsPerPage } from './store/customersSlice';
+import { CreateUpdateCustomerDialog } from '../shared-components';
 
 const { default: FuseScrollbars } = require('@fuse/core/FuseScrollbars');
 const {
@@ -14,6 +16,10 @@ const {
   TableRow,
   TablePagination,
   TableCell,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
   Checkbox,
 } = require('@mui/material');
 const { useState, useEffect } = require('react');
@@ -54,14 +60,24 @@ const CustomersTable = () => {
     dispatch(getCustomers());
   }
   const shop = useSelector(({ auth }) => auth.user.shop);
-  console.log('data', data);
   useEffect(() => {
     dispatch(getCustomers()).then(() => {
       setLoading(false);
     });
   }, [dispatch]);
   const handleClick = (row) => {
-    history.push({ pathname: `/apps/invoice/${row.id}` });
+    dispatch(
+      openDialog({
+        children: (
+          <CreateUpdateCustomerDialog
+            customer={row}
+            updateCustomer={(newCustomer) => {
+              console.log('update', newCustomer);
+            }}
+          />
+        ),
+      })
+    );
   };
   function handleCheck(event, id) {
     const selectedIndex = selected.indexOf(id);
@@ -85,10 +101,12 @@ const CustomersTable = () => {
 
   function handleChangePage(event, value) {
     dispatch(setPage(value));
+    dispatch(getCustomers());
   }
 
   function handleChangeRowsPerPage(event) {
     dispatch(setRowsPerPage(event.target.value));
+    dispatch(getCustomers());
   }
   function handleDeselect() {
     setSelected([]);
@@ -148,7 +166,7 @@ const CustomersTable = () => {
                     {n.name}
                   </TableCell>
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="center">
-                    {n.phone}
+                    {n.fullPhone}
                   </TableCell>
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="center">
                     {n.address}

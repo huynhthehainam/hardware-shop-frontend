@@ -9,7 +9,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectMainTheme } from 'app/store/fuse/settingsSlice';
 import { useDebounce } from '@fuse/hooks';
 import { useTranslation } from 'react-i18next';
-import { setSearchText, getCustomers, setPage } from './store/customersSlice';
+import { closeDialog, openDialog } from 'app/store/fuse/dialogSlice';
+import { setSearchText, getCustomers, setPage, createCustomer } from './store/customersSlice';
+import { CreateUpdateCustomerDialog } from '../shared-components';
 
 function CustomersHeader() {
   const dispatch = useDispatch();
@@ -24,7 +26,22 @@ function CustomersHeader() {
     dispatch(setSearchText(ev.target.value ?? ''));
     debounce(ev);
   };
-  const handleCreateCustomer = () => {};
+  const handleCreateCustomer = () => {
+    dispatch(
+      openDialog({
+        children: (
+          <CreateUpdateCustomerDialog
+            createCustomer={(data) => {
+              dispatch(createCustomer(data)).then(() => {
+                dispatch(closeDialog());
+                dispatch(getCustomers());
+              });
+            }}
+          />
+        ),
+      })
+    );
+  };
   return (
     <div className="flex flex-1 w-full items-center justify-between">
       <div className="flex items-center">

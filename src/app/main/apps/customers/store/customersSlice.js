@@ -3,11 +3,36 @@ import mainAxios, { urlConfig } from 'custom-axios';
 
 export const getCustomers = createAsyncThunk(
   'customers/customers/getCustomers',
+  (data, { dispatch, getState }) => {
+    return new Promise((resolve, reject) => {
+      const search = getState().customers.customers.searchText;
+      const pageIndex = getState().customers.customers.page;
+      const pageSize = getState().customers.customers.rowsPerPage;
+      mainAxios
+        .get(urlConfig.getCustomers, {
+          params: {
+            search,
+            pageIndex,
+            pageSize,
+          },
+        })
+        .then((resp) => {
+          const customers = resp.data.data.map((e) => {
+            return { ...e, fullPhone: `${e.phonePrefix}${e.phone}` };
+          });
+          dispatch(setCustomers(customers));
+          dispatch(setTotalRecords(resp.data.totalItems));
+          resolve();
+        });
+    });
+  }
+);
+export const createCustomer = createAsyncThunk(
+  'invoices/createUpdateInvoice/createCustomer',
   (data, { dispatch }) => {
     return new Promise((resolve, reject) => {
-      mainAxios.get(urlConfig.getCustomers).then((resp) => {
-        dispatch(setCustomers(resp.data.data));
-        dispatch(setTotalRecords(resp.data.totalItems));
+      if (data.phone && data.phone !== '') data.phone = `+84${data.phone}`;
+      mainAxios.post(urlConfig.createCustomer, data).then((resp) => {
         resolve();
       });
     });
