@@ -1,4 +1,4 @@
-import { TextField, InputAdornment } from '@mui/material';
+import { TextField, InputAdornment, FormControl, Select, MenuItem } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import mainAxios, { urlConfig } from 'custom-axios';
+import { getAllCountries } from 'custom-axios';
 
 const schema = yup.object().shape({
   name: yup.string().required(),
@@ -35,8 +35,8 @@ const CreateCustomerDialog = (props) => {
   const { control, formState, setValue, reset, watch, getValues } = formContext;
   const { errors } = formState;
   useEffect(() => {
-    mainAxios.get(urlConfig.getCountries).then((resp) => {
-      setCountries(resp.data.data);
+    getAllCountries().then((data) => {
+      setCountries(data);
     });
   }, [setCountries]);
   useEffect(() => {
@@ -100,7 +100,26 @@ const CreateCustomerDialog = (props) => {
                 variant="outlined"
                 fullWidth
                 InputProps={{
-                  startAdornment: <InputAdornment position="start">+84</InputAdornment>,
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <FormControl sx={{}}>
+                        <Select
+                          id="demo-simple-select-readonly"
+                          value={1}
+                          label="Age"
+                          onChange={(e) => {
+                            console.log('e', e);
+                          }}
+                          inputProps={{ 'aria-label': 'Without label' }}
+                        >
+                          {countries.map((e) => {
+                            console.log('item', e);
+                            return <MenuItem value={e.id}>{e.name}</MenuItem>;
+                          })}
+                        </Select>
+                      </FormControl>
+                    </InputAdornment>
+                  ),
                 }}
               />
             );
