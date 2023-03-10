@@ -1,4 +1,4 @@
-import { TextField, InputAdornment, FormControl, Select, MenuItem } from '@mui/material';
+import { TextField, FormControl, Select, MenuItem, InputAdornment } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -38,9 +38,16 @@ const CreateCustomerDialog = (props) => {
     getAllCountries().then((data) => {
       setCountries(data);
     });
-  }, [setCountries]);
+  }, [setCountries, reset]);
   useEffect(() => {
-    console.log('reset form', customer);
+    if (countries.length > 0) {
+      console.log('update value', countries);
+      reset({
+        phoneCountryId: countries[0].id,
+      });
+    }
+  }, [countries, reset]);
+  useEffect(() => {
     if (customer) {
       reset(customer);
     } else {
@@ -50,6 +57,7 @@ const CreateCustomerDialog = (props) => {
         phone: '',
         address: '',
         isFamiliar: false,
+        phoneCountryId: 1,
       });
     }
   }, [customer, reset]);
@@ -61,6 +69,7 @@ const CreateCustomerDialog = (props) => {
       props.updateCustomer(data);
     }
   };
+
   const name = watch('name');
   return (
     <FormProvider {...formContext}>
@@ -85,46 +94,55 @@ const CreateCustomerDialog = (props) => {
             );
           }}
         />
-        <Controller
-          name="phone"
-          control={control}
-          render={({ field }) => {
-            return (
-              <TextField
-                {...field}
-                className="mt-8 mb-16"
-                error={!!errors.phone}
-                required
-                label={t('CUSTOMER_PHONE_LABEL')}
-                id="phone"
-                variant="outlined"
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <FormControl sx={{}}>
-                        <Select
-                          id="demo-simple-select-readonly"
-                          value={1}
-                          label="Age"
-                          onChange={(e) => {
-                            console.log('e', e);
-                          }}
-                          inputProps={{ 'aria-label': 'Without label' }}
-                        >
-                          {countries.map((e) => {
-                            console.log('item', e);
-                            return <MenuItem value={e.id}>{e.name}</MenuItem>;
-                          })}
-                        </Select>
-                      </FormControl>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            );
-          }}
-        />
+        <div className="flex w-full mt-8 mb-16">
+          <Controller
+            name="phoneCountryId"
+            control={control}
+            render={({ field }) => {
+              console.log('field', field);
+              return (
+                <FormControl className="w-1/5">
+                  <Select
+                    id="phone-country-select"
+                    value={field.value}
+                    onChange={(e) => {
+                      field.onChange(e.target.value);
+                    }}
+                  >
+                    {countries.map((e, index) => {
+                      return (
+                        <MenuItem key={index} value={e.id}>
+                          <img className="max-w-none w-auto h-full" src={e.logoUrl} alt="product" />
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                </FormControl>
+              );
+            }}
+          />
+          <Controller
+            name="phone"
+            control={control}
+            render={({ field }) => {
+              return (
+                <TextField
+                  {...field}
+                  className="ml-8 flex-1"
+                  error={!!errors.phone}
+                  required
+                  label={t('CUSTOMER_PHONE_LABEL')}
+                  id="phone"
+                  variant="outlined"
+                  fullWidth
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">+84</InputAdornment>,
+                  }}
+                />
+              );
+            }}
+          />
+        </div>
         <Controller
           name="address"
           control={control}
