@@ -10,7 +10,8 @@ import { selectMainTheme } from 'app/store/fuse/settingsSlice';
 import { useDebounce } from '@fuse/hooks';
 import { useTranslation } from 'react-i18next';
 import { closeDialog, openDialog } from 'app/store/fuse/dialogSlice';
-import { setSearchText, getCustomers, setPage, createCustomer } from './store/customersSlice';
+import { createCustomer } from 'custom-axios/commonRequest';
+import { setSearchText, getCustomers, setPage } from './store/customersSlice';
 import { CreateUpdateCustomerDialog } from '../shared-components';
 
 function CustomersHeader() {
@@ -32,7 +33,7 @@ function CustomersHeader() {
         children: (
           <CreateUpdateCustomerDialog
             createCustomer={(data) => {
-              dispatch(createCustomer(data)).then(() => {
+              createCustomer(data).then(() => {
                 dispatch(closeDialog());
                 dispatch(getCustomers());
               });

@@ -23,4 +23,44 @@ export const getAllCountries = () => {
   });
 };
 
+export const getCustomerDetailById = (id) => {
+  return new Promise((resolve, reject) => {
+    mainAxios.get(urlConfig.getCustomerDetailById(id)).then((resp) => {
+      resolve(resp.data.data);
+    });
+  });
+};
+
+export const getCustomerDebtHistoriesById = (id) => {
+  return new Promise((resolve) => {
+    mainAxios.get(urlConfig.getCustomerDebtHistoriesById(id)).then((resp) => {
+      resolve(resp.data);
+    });
+  });
+};
+export const getCustomerInvoicesById = (id) => {
+  return new Promise((resolve) => {
+    mainAxios.get(urlConfig.getCustomerInvoicesById(id)).then((resp) => {
+      resolve(resp.data);
+    });
+  });
+};
+export const createCustomer = (data) => {
+  return new Promise((resolve, reject) => {
+    if (data.phone && data.phone !== '') data.phone = `+84${data.phone}`;
+    mainAxios.post(urlConfig.createCustomer, data).then((resp) => {
+      resolve();
+    });
+  });
+};
+
+export const updateCustomer = (params) => {
+  return new Promise((resolve, reject) => {
+    const { id, data } = params;
+    mainAxios.post(urlConfig.updateCustomerById(id), data).then(() => {
+      resolve();
+    });
+  });
+};
+
 export default { getAllCountries };

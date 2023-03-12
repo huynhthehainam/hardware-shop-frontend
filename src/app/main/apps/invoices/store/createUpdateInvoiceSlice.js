@@ -69,6 +69,7 @@ export const getInvoiceById = createAsyncThunk(
             name: data.customerName,
             phone: data.customerPhone,
             address: data.customerAddress,
+            phonePrefix: data.customerPhonePrefix,
           },
           code: '',
           date: data.createdDate,

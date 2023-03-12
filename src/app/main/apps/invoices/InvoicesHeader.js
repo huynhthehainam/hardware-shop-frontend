@@ -31,7 +31,7 @@ const InvoicesHeader = () => {
           animate={{ scale: 1, transition: { delay: 0.2 } }}
           className="text-24 md:text-32"
         >
-          shopping_basket
+          receipt_long
         </Icon>
         <Typography
           component={motion.span}

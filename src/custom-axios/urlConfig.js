@@ -30,6 +30,10 @@ const urlConfig = {
   createCustomer: '/api/customers',
   getCountries: '/api/countries',
   getCountryIconById: (id) => `/api/countries/${id}/icon`,
+  updateCustomerById: (id) => `/api/customers/${id}/update`,
+  getCustomerDetailById: (id) => `/api/customers/${id}`,
+  getCustomerDebtHistoriesById: (id) => `/api/customers/${id}/debtHistories`,
+  getCustomerInvoicesById: (id) => `/api/customers/${id}/invoices`,
 };
 
 export default urlConfig;

@@ -4,10 +4,14 @@ import FuseLoading from '@fuse/core/FuseLoading';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { openDialog } from 'app/store/fuse/dialogSlice';
+import { closeDialog, openDialog } from 'app/store/fuse/dialogSlice';
+import { updateCustomer } from 'custom-axios/commonRequest';
 import CustomersTableHead from './CustomersTableHead';
 import { getCustomers, setOrder, setPage, setRowsPerPage } from './store/customersSlice';
 import { CreateUpdateCustomerDialog } from '../shared-components';
+import PayDebtDialog from './dialogs/PayDebtDialog';
+import CustomerDebtHistoryDialog from './dialogs/CustomerDebtHistoryDialog';
+import CustomerInvoiceHistoryDialog from './dialogs/CustomerInvoiceHistoryDialog';
 
 const { default: FuseScrollbars } = require('@fuse/core/FuseScrollbars');
 const {
@@ -21,6 +25,10 @@ const {
   DialogTitle,
   Button,
   Checkbox,
+  FormControlLabel,
+  Switch,
+  IconButton,
+  Icon,
 } = require('@mui/material');
 const { useState, useEffect } = require('react');
 const { useSelector, useDispatch } = require('react-redux');
@@ -66,13 +74,19 @@ const CustomersTable = () => {
     });
   }, [dispatch]);
   const handleClick = (row) => {
+    console.log('click row', row);
     dispatch(
       openDialog({
         children: (
           <CreateUpdateCustomerDialog
             customer={row}
             updateCustomer={(newCustomer) => {
-              console.log('update', newCustomer);
+              const { id } = newCustomer;
+
+              updateCustomer({ id, data: newCustomer }).then(() => {
+                dispatch(closeDialog());
+                dispatch(getCustomers());
+              });
             }}
           />
         ),
@@ -152,7 +166,9 @@ const CustomersTable = () => {
                   tabIndex={-1}
                   key={n.id}
                   selected={isSelected}
-                  onClick={(event) => handleClick(n)}
+                  onClick={(event) => {
+                    handleClick(n);
+                  }}
                 >
                   <TableCell className="w-40 md:w-64 text-center" padding="none">
                     <Checkbox
@@ -175,6 +191,105 @@ const CustomersTable = () => {
                     {n.debt.toLocaleString()}
                     {<span> {shop.cashUnitName} </span>}
                   </TableCell>
+                  <TableCell className="p-4 md:p-16" component="th" scope="row" align="center">
+                    <Switch
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                      }}
+                      onChange={(ev) => {
+                        updateCustomer({ id: n.id, data: { isFamiliar: ev.target.checked } }).then(
+                          () => {
+                            dispatch(getCustomers());
+                          }
+                        );
+                      }}
+                      checked={n.isFamiliar}
+                      name="hasAutoCalculatePermission"
+                    />
+                  </TableCell>
+                  <TableCell className="p-4 md:p-16" component="th" scope="row" align="center">
+                    <div className="flex justify-center items-center">
+                      <IconButton
+                        key="cash"
+                        color="secondary"
+                        onClick={(ev) => {
+                          ev.stopPropagation();
+                          dispatch(
+                            openDialog({
+                              maxWidth: 'xs',
+                              fullWidth: true,
+                              children: (
+                                <PayDebtDialog
+                                  customerId={n.id}
+                                  borrowDebt={(borrowData) => {
+                                    console.log('data', borrowData);
+                                    updateCustomer({
+                                      id: borrowData.id,
+                                      data: {
+                                        amountOfCash: borrowData.amount,
+                                      },
+                                    }).then(() => {
+                                      dispatch(closeDialog());
+                                      dispatch(getCustomers());
+                                    });
+                                  }}
+                                  payBack={(payBackData) => {
+                                    updateCustomer({
+                                      id: payBackData.id,
+                                      data: {
+                                        amountOfCash: -payBackData.amount,
+                                      },
+                                    }).then(() => {
+                                      dispatch(closeDialog());
+                                      dispatch(getCustomers());
+                                    });
+                                    dispatch(closeDialog());
+                                  }}
+                                />
+                              ),
+                            })
+                          );
+                        }}
+                        size="large"
+                      >
+                        <Icon>monetization_on</Icon>
+                      </IconButton>
+                      <IconButton
+                        key="invoice-history"
+                        color="secondary"
+                        onClick={(ev) => {
+                          ev.stopPropagation();
+                          dispatch(
+                            openDialog({
+                              maxWidth: 'md',
+                              fullWidth: true,
+                              children: <CustomerInvoiceHistoryDialog customerId={n.id} />,
+                            })
+                          );
+                        }}
+                        size="large"
+                      >
+                        <Icon>local_grocery_store</Icon>
+                      </IconButton>
+                      <IconButton
+                        key="debt-history"
+                        color="secondary"
+                        onClick={(ev) => {
+                          ev.stopPropagation();
+                          dispatch(
+                            openDialog({
+                              maxWidth: 'md',
+                              fullWidth: true,
+                              children: <CustomerDebtHistoryDialog customerId={n.id} />,
+                            })
+                          );
+                        }}
+                        size="large"
+                      >
+                        <Icon>account_balance</Icon>
+                      </IconButton>
+                    </div>
+                  </TableCell>
                 </TableRow>
               );
             })}
@@ -186,7 +301,7 @@ const CustomersTable = () => {
         component="div"
         count={totalRecords}
         rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[5, 10, 20]}
+        rowsPerPageOptions={[10, 20, 50]}
         page={page}
         backIconButtonProps={{
           'aria-label': 'Previous Page',

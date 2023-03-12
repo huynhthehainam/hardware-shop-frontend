@@ -30,13 +30,12 @@ const rows = [
     disablePadding: false,
     label: 'Categories',
     translate: 'PHONE_LABEL',
-    sort: true,
+    sort: false,
   },
   {
     id: 'address',
     align: 'center',
     disablePadding: false,
-    label: 'Unit',
     translate: 'ADDRESS_LABEL',
     sort: true,
   },
@@ -44,9 +43,22 @@ const rows = [
     id: 'debt',
     align: 'right',
     disablePadding: false,
-    label: 'Unit',
     translate: 'DEBT_LABEL',
     sort: true,
+  },
+  {
+    id: 'isFamiliar',
+    align: 'center',
+    disablePadding: false,
+    translate: 'IS_FAMILIAR_LABEL',
+    sort: false,
+  },
+  {
+    id: 'actions',
+    align: 'center',
+    disablePadding: false,
+    translate: 'ACTIONS_LABEL',
+    sort: false,
   },
 ];
 
@@ -141,7 +153,7 @@ function CustomersTableHead(props) {
               </Tooltip>
             </TableCell>
           );
-        }, this)}
+        })}
       </TableRow>
     </TableHead>
   );

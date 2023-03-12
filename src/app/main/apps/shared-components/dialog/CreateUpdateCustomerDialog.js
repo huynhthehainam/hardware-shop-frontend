@@ -14,6 +14,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { getAllCountries } from 'custom-axios';
+import _ from 'lodash';
+import FuseLoading from '@fuse/core/FuseLoading';
 
 const schema = yup.object().shape({
   name: yup.string().required(),
@@ -39,28 +41,24 @@ const CreateCustomerDialog = (props) => {
       setCountries(data);
     });
   }, [setCountries, reset]);
+
   useEffect(() => {
-    if (countries.length > 0) {
-      console.log('update value', countries);
-      reset({
-        phoneCountryId: countries[0].id,
-      });
-    }
-  }, [countries, reset]);
-  useEffect(() => {
-    if (customer) {
-      reset(customer);
-    } else {
-      reset({
-        id: 0,
-        name: '',
-        phone: '',
-        address: '',
-        isFamiliar: false,
-        phoneCountryId: 1,
-      });
-    }
-  }, [customer, reset]);
+    if (countries.length > 0)
+      if (customer) {
+        const newCustomer = { ...customer };
+        newCustomer.phoneCountryId = newCustomer.phoneCountryId ?? countries[0].id;
+        reset(newCustomer);
+      } else {
+        reset({
+          id: 0,
+          name: '',
+          phone: '',
+          address: '',
+          isFamiliar: false,
+          phoneCountryId: countries[0].id,
+        });
+      }
+  }, [customer, countries, reset]);
   const handleSaveCustomer = () => {
     const data = getValues();
     if (data.id === 0) {
@@ -69,11 +67,23 @@ const CreateCustomerDialog = (props) => {
       props.updateCustomer(data);
     }
   };
+  const form = watch();
 
-  const name = watch('name');
+  if (_.isEmpty(form)) {
+    return (
+      <>
+        <DialogContent>
+          <FuseLoading />
+        </DialogContent>
+      </>
+    );
+  }
+
   return (
     <FormProvider {...formContext}>
-      <DialogTitle id="alert-dialog-title">{t('CREATE_CUSTOMER_TITLE', { name })}</DialogTitle>
+      <DialogTitle id="alert-dialog-title">
+        {t('CREATE_CUSTOMER_TITLE', { name: form.name })}
+      </DialogTitle>
       <DialogContent>
         <Controller
           name="name"
@@ -99,7 +109,6 @@ const CreateCustomerDialog = (props) => {
             name="phoneCountryId"
             control={control}
             render={({ field }) => {
-              console.log('field', field);
               return (
                 <FormControl className="w-1/5">
                   <Select
@@ -111,8 +120,8 @@ const CreateCustomerDialog = (props) => {
                   >
                     {countries.map((e, index) => {
                       return (
-                        <MenuItem key={index} value={e.id}>
-                          <img className="max-w-none w-auto h-full" src={e.logoUrl} alt="product" />
+                        <MenuItem key={e.id} value={e.id}>
+                          <img className="max-w-none w-auto h-20" src={e.logoUrl} alt="product" />
                         </MenuItem>
                       );
                     })}
@@ -121,6 +130,7 @@ const CreateCustomerDialog = (props) => {
               );
             }}
           />
+
           <Controller
             name="phone"
             control={control}
@@ -136,7 +146,11 @@ const CreateCustomerDialog = (props) => {
                   variant="outlined"
                   fullWidth
                   InputProps={{
-                    startAdornment: <InputAdornment position="start">+84</InputAdornment>,
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        {_.find(countries, (e) => e.id === form.phoneCountryId).phonePrefix}
+                      </InputAdornment>
+                    ),
                   }}
                 />
               );

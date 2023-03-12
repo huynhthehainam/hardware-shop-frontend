@@ -27,24 +27,13 @@ export const getCustomers = createAsyncThunk(
     });
   }
 );
-export const createCustomer = createAsyncThunk(
-  'invoices/createUpdateInvoice/createCustomer',
-  (data, { dispatch }) => {
-    return new Promise((resolve, reject) => {
-      if (data.phone && data.phone !== '') data.phone = `+84${data.phone}`;
-      mainAxios.post(urlConfig.createCustomer, data).then((resp) => {
-        resolve();
-      });
-    });
-  }
-);
 
 const customersSlice = createSlice({
   name: 'customers',
   initialState: {
     searchText: '',
     customers: [],
-    rowsPerPage: 5,
+    rowsPerPage: 10,
     page: 0,
     totalRecords: 0,
     order: {

@@ -44,7 +44,7 @@ export default () => {
             getOptionLabel={(item) => {
               let label = item.name;
               if (item.phone) {
-                label += ` | ${item.phone}`;
+                label += ` | ${item.phonePrefix}${item.phone}`;
               } else if (item.address) {
                 label += ` | ${item.address}`;
               }
