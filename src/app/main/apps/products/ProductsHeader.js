@@ -10,7 +10,9 @@ import { Link } from 'react-router-dom';
 import { selectMainTheme } from 'app/store/fuse/settingsSlice';
 import { useDebounce } from '@fuse/hooks';
 import { useTranslation } from 'react-i18next';
+import { openDialog } from 'app/store/fuse/dialogSlice';
 import { setProductsSearchText, getProducts, setPage } from './store/productsSlice';
+import UpdateProductPricePerMass from './dialogs/UpdateProductPricePerMass';
 
 function ProductsHeader() {
   const dispatch = useDispatch();
@@ -84,6 +86,27 @@ function ProductsHeader() {
         >
           <span className="hidden sm:flex">{t('ADD_NEW_PRODUCT_BUTTON')}</span>
           <span className="flex sm:hidden">{t('NEW_BUTTON')}</span>
+        </Button>
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}
+      >
+        <Button
+          onClick={() => {
+            dispatch(
+              openDialog({
+                maxWidth: 'xs',
+                fullWidth: true,
+                children: <UpdateProductPricePerMass />,
+              })
+            );
+          }}
+          className="whitespace-nowrap ml-4"
+          variant="contained"
+          color="secondary"
+        >
+          <span className="flex">{t('UPDATE_PRICE_PER_MASS_BUTTON')}</span>
         </Button>
       </motion.div>
     </div>

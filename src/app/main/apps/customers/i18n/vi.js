@@ -20,6 +20,7 @@ const locale = {
   CHANGE_LABEL: 'Thay đổi',
   DEBT_REASON_WHEN_BORROWING: 'Mượn nợ',
   DEBT_REASON_WHEN_BUYING: 'Khi mua đơn hàng {{invoiceCode}}',
+  DEBT_REASON_WHEN_PAYING_ALL: 'Trả hết',
   INVOICE_CODE_LABEL: 'Mã hoá đơn',
   TOTAL_COST_LABEL: 'Tổng',
   DEPOSIT_LABEL: 'Trả trước',

@@ -18,7 +18,7 @@ export const getCustomers = createAsyncThunk(
         })
         .then((resp) => {
           const customers = resp.data.data.map((e) => {
-            return { ...e, fullPhone: `${e.phonePrefix}${e.phone}` };
+            return { ...e, fullPhone: `${e.phonePrefix ?? ''}${e.phone ?? ''}` };
           });
           dispatch(setCustomers(customers));
           dispatch(setTotalRecords(resp.data.totalItems));

@@ -63,4 +63,12 @@ export const updateCustomer = (params) => {
   });
 };
 
+export const getAllCategories = () => {
+  return new Promise((resolve, reject) => {
+    mainAxios.get(urlConfig.getCategories).then((resp) => {
+      resolve(resp.data.data);
+    });
+  });
+};
+
 export default { getAllCountries };

@@ -76,9 +76,7 @@ export default (props) => {
   }
   return (
     <>
-      <DialogTitle id="alert-dialog-title">
-        {t('DEBT_HISTORY_TITLE', { name: customer.name })}
-      </DialogTitle>
+      <DialogTitle>{t('DEBT_HISTORY_TITLE', { name: customer.name })}</DialogTitle>
       <DialogContent>
         <Card className="w-full flex flex-col" style={{ height: '300px' }}>
           <FuseScrollbars className="flex-grow overflow-x-auto">

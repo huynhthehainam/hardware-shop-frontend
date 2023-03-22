@@ -29,6 +29,11 @@ const locale = {
   ADD_NEW_PRODUCT_BUTTON: 'Thêm sản phẩm',
   NEW_BUTTON: 'Thêm',
   CALCULATE_BUTTON: 'Tính toán',
+  UPDATE_PRICE_PER_MASS_BUTTON: 'Chỉnh giá / kg',
+  UPDATE_PRICE_PER_MASS_TITLE: 'Chỉnh giá trên khối lượng',
+  AMOUNT_LABEL: 'Khoảng tiền',
+  CANCEL_BUTTON: 'Huỷ',
+  UPDATE_BUTTON: 'Cập nhật',
 };
 
 export default locale;
