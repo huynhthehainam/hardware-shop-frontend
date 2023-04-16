@@ -34,6 +34,9 @@ const urlConfig = {
   getCustomerDetailById: (id) => `/api/customers/${id}`,
   getCustomerDebtHistoriesById: (id) => `/api/customers/${id}/debtHistories`,
   getCustomerInvoicesById: (id) => `/api/customers/${id}/invoices`,
+  addPricePerMass: '/api/products/addPricePerMass',
+  softlyRemoveProductById: (id) => `/api/products/${id}/softlyDelete`,
+  payAllDebtById: (id) => `/api/customers/${id}/payAllDebt`,
 };
 
 export default urlConfig;

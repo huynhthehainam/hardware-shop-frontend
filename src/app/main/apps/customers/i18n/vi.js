@@ -24,5 +24,12 @@ const locale = {
   INVOICE_CODE_LABEL: 'Mã hoá đơn',
   TOTAL_COST_LABEL: 'Tổng',
   DEPOSIT_LABEL: 'Trả trước',
+  PAY_OR_BORROW_DEBT_TOOLTIP: 'Mượn hoặc trả nợ',
+  SHOW_INVOICE_HISTORY_TOOLTIP: 'Hiện lịch sử mua hàng',
+  SHOW_DEBT_HISTORY_TOOLTIP: 'Hiện lịch sử nợ',
+  PAY_FULL_DEBT_TITLE: 'Xoá hết nợ cho {{name}}',
+  ARE_YOU_SURE: 'Bạn có muốn xoá hết nợ cho {{name}}?',
+  PAY_FULL_DEBT_TOOLTIP: 'Trả hết nợ',
+  OK_BUTTON: 'Đồng ý',
 };
 export default locale;

@@ -40,12 +40,17 @@ export const getThumbnails = createAsyncThunk(
           new Promise((thumbnailResolve) => {
             const newItem = { ...item };
             const url = urlConfig.getProductThumbnailById(item.id);
-            mainAxios.get(url, { responseType: 'blob' }).then((response) => {
-              const { data } = response;
-              const blobUrl = URL.createObjectURL(data);
-              newItem.image = blobUrl;
-              thumbnailResolve(newItem);
-            });
+            mainAxios
+              .get(url, { responseType: 'blob' })
+              .then((response) => {
+                const { data } = response;
+                const blobUrl = URL.createObjectURL(data);
+                newItem.image = blobUrl;
+                thumbnailResolve(newItem);
+              })
+              .catch((err) => {
+                thumbnailResolve(newItem);
+              });
           })
       );
       Promise.all(promises).then((values) => {
@@ -58,10 +63,22 @@ export const getThumbnails = createAsyncThunk(
 
 export const removeProducts = createAsyncThunk(
   'products/products/removeProducts',
-  async (productIds, { dispatch, getState }) => {
-    await mainAxios.post('/api/e-commerce-app/remove-products', { productIds });
-
-    return productIds;
+  (productIds, { dispatch, getState }) => {
+    return new Promise((resolve) => {
+      const promises = productIds.map((id) => {
+        return new Promise((removeProductResolve) => {
+          mainAxios
+            .post(urlConfig.softlyRemoveProductById(id))
+            .then(removeProductResolve(id))
+            .catch((e) => {
+              removeProductResolve(id);
+            });
+        });
+      });
+      Promise.all(promises).then((values) => {
+        resolve(values);
+      });
+    });
   }
 );
 

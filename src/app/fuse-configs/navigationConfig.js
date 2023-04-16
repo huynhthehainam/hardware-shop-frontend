@@ -36,22 +36,6 @@ const navigationConfig = [
       },
     ],
   },
-  // {
-  //   id: 'manage-orders',
-  //   title: 'Manage Orders',
-  //   translate: 'MANAGE_ORDERS',
-  //   type: 'collapse',
-  //   children: [
-  //     {
-  //       id: 'orders',
-  //       title: 'Orders',
-  //       translate: 'ORDERS',
-  //       type: 'item',
-  //       url: '/apps/orders',
-  //       exact: true,
-  //     },
-  //   ],
-  // },
   {
     id: 'customer-list',
     title: 'Customers',
@@ -86,6 +70,24 @@ const navigationConfig = [
         url: '/apps/product/new',
         exact: true,
         auth: authRoles.shopAdmin,
+      },
+    ],
+  },
+  {
+    id: 'manage-shops',
+    title: 'Shops',
+    translate: 'MANAGE_SHOPS',
+    type: 'collapse',
+    auth: authRoles.sysAdmin,
+    children: [
+      {
+        id: 'shop-list',
+        title: 'Shops',
+        translate: 'SHOPS',
+        type: 'item',
+        url: '/apps/shops',
+        exact: true,
+        auth: authRoles.sysAdmin,
       },
     ],
   },

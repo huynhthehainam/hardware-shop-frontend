@@ -12,6 +12,7 @@ import { CreateUpdateCustomerDialog } from '../shared-components';
 import PayDebtDialog from './dialogs/PayDebtDialog';
 import CustomerDebtHistoryDialog from './dialogs/CustomerDebtHistoryDialog';
 import CustomerInvoiceHistoryDialog from './dialogs/CustomerInvoiceHistoryDialog';
+import PayFullDebtConfirmationDialog from './dialogs/PayFullDebtConfirmationDialog';
 
 const { default: FuseScrollbars } = require('@fuse/core/FuseScrollbars');
 const {
@@ -29,13 +30,14 @@ const {
   Switch,
   IconButton,
   Icon,
+  Tooltip,
 } = require('@mui/material');
 const { useState, useEffect } = require('react');
 const { useSelector, useDispatch } = require('react-redux');
 
 const CustomersTable = () => {
   const [selected, setSelected] = useState([]);
-  const { t } = useTranslation('invoices');
+  const { t } = useTranslation('customers');
   const [loading, setLoading] = useState(true);
   const data = useSelector(({ customers }) => customers.customers.customers);
   const page = useSelector((state) => state.customers.customers.page);
@@ -209,85 +211,110 @@ const CustomersTable = () => {
                   </TableCell>
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="center">
                     <div className="flex justify-center items-center">
-                      <IconButton
-                        key="cash"
-                        color="secondary"
-                        onClick={(ev) => {
-                          ev.stopPropagation();
-                          dispatch(
-                            openDialog({
-                              maxWidth: 'xs',
-                              fullWidth: true,
-                              children: (
-                                <PayDebtDialog
-                                  customerId={n.id}
-                                  borrowDebt={(borrowData) => {
-                                    console.log('data', borrowData);
-                                    updateCustomer({
-                                      id: borrowData.id,
-                                      data: {
-                                        amountOfCash: borrowData.amount,
-                                      },
-                                    }).then(() => {
+                      <Tooltip title={t('PAY_OR_BORROW_DEBT_TOOLTIP')}>
+                        <IconButton
+                          key="cash"
+                          color="secondary"
+                          onClick={(ev) => {
+                            ev.stopPropagation();
+                            dispatch(
+                              openDialog({
+                                maxWidth: 'xs',
+                                fullWidth: true,
+                                children: (
+                                  <PayDebtDialog
+                                    customerId={n.id}
+                                    borrowDebt={(borrowData) => {
+                                      console.log('data', borrowData);
+                                      updateCustomer({
+                                        id: borrowData.id,
+                                        data: {
+                                          amountOfCash: borrowData.amount,
+                                        },
+                                      }).then(() => {
+                                        dispatch(closeDialog());
+                                        dispatch(getCustomers());
+                                      });
+                                    }}
+                                    payBack={(payBackData) => {
+                                      updateCustomer({
+                                        id: payBackData.id,
+                                        data: {
+                                          amountOfCash: -payBackData.amount,
+                                        },
+                                      }).then(() => {
+                                        dispatch(closeDialog());
+                                        dispatch(getCustomers());
+                                      });
                                       dispatch(closeDialog());
-                                      dispatch(getCustomers());
-                                    });
-                                  }}
-                                  payBack={(payBackData) => {
-                                    updateCustomer({
-                                      id: payBackData.id,
-                                      data: {
-                                        amountOfCash: -payBackData.amount,
-                                      },
-                                    }).then(() => {
-                                      dispatch(closeDialog());
-                                      dispatch(getCustomers());
-                                    });
-                                    dispatch(closeDialog());
-                                  }}
-                                />
-                              ),
-                            })
-                          );
-                        }}
-                        size="large"
-                      >
-                        <Icon>monetization_on</Icon>
-                      </IconButton>
-                      <IconButton
-                        key="invoice-history"
-                        color="secondary"
-                        onClick={(ev) => {
-                          ev.stopPropagation();
-                          dispatch(
-                            openDialog({
-                              maxWidth: 'md',
-                              fullWidth: true,
-                              children: <CustomerInvoiceHistoryDialog customerId={n.id} />,
-                            })
-                          );
-                        }}
-                        size="large"
-                      >
-                        <Icon>local_grocery_store</Icon>
-                      </IconButton>
-                      <IconButton
-                        key="debt-history"
-                        color="secondary"
-                        onClick={(ev) => {
-                          ev.stopPropagation();
-                          dispatch(
-                            openDialog({
-                              maxWidth: 'md',
-                              fullWidth: true,
-                              children: <CustomerDebtHistoryDialog customerId={n.id} />,
-                            })
-                          );
-                        }}
-                        size="large"
-                      >
-                        <Icon>account_balance</Icon>
-                      </IconButton>
+                                    }}
+                                  />
+                                ),
+                              })
+                            );
+                          }}
+                          size="large"
+                        >
+                          <Icon>monetization_on</Icon>
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title={t('SHOW_INVOICE_HISTORY_TOOLTIP')}>
+                        <IconButton
+                          key="invoice-history"
+                          color="secondary"
+                          onClick={(ev) => {
+                            ev.stopPropagation();
+                            dispatch(
+                              openDialog({
+                                maxWidth: 'md',
+                                fullWidth: true,
+                                children: <CustomerInvoiceHistoryDialog customerId={n.id} />,
+                              })
+                            );
+                          }}
+                          size="large"
+                        >
+                          <Icon>local_grocery_store</Icon>
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title={t('SHOW_DEBT_HISTORY_TOOLTIP')}>
+                        <IconButton
+                          key="debt-history"
+                          color="secondary"
+                          onClick={(ev) => {
+                            ev.stopPropagation();
+                            dispatch(
+                              openDialog({
+                                maxWidth: 'md',
+                                fullWidth: true,
+                                children: <CustomerDebtHistoryDialog customerId={n.id} />,
+                              })
+                            );
+                          }}
+                          size="large"
+                        >
+                          <Icon>account_balance</Icon>
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title={t('PAY_FULL_DEBT_TOOLTIP')}>
+                        <IconButton
+                          key="debt-history"
+                          color="secondary"
+                          onClick={(ev) => {
+                            ev.stopPropagation();
+                            dispatch(
+                              openDialog({
+                                maxWidth: 'md',
+                                fullWidth: true,
+                                children: <PayFullDebtConfirmationDialog customer={n} />,
+                              })
+                            );
+                          }}
+                          size="large"
+                        >
+                          <Icon>payment</Icon>
+                        </IconButton>
+                      </Tooltip>
                     </div>
                   </TableCell>
                 </TableRow>

@@ -15,7 +15,7 @@ import { useDispatch } from 'react-redux';
 import { Box } from '@mui/system';
 import TableHead from '@mui/material/TableHead';
 import { useTranslation } from 'react-i18next';
-import { removeProducts } from './store/productsSlice';
+import { getProducts, removeProducts } from './store/productsSlice';
 
 const rows = [
   {
@@ -103,7 +103,7 @@ function ProductsTableHead(props) {
   const { t } = useTranslation('products');
   const { selectedProductIds } = props;
   const numSelected = selectedProductIds.length;
-
+  const { onMenuItemClick } = props;
   const [selectedProductsMenu, setSelectedProductsMenu] = useState(null);
 
   const dispatch = useDispatch();
@@ -152,9 +152,12 @@ function ProductsTableHead(props) {
                 <MenuList>
                   <MenuItem
                     onClick={() => {
-                      dispatch(removeProducts(selectedProductIds));
-                      props.onMenuItemClick();
-                      closeSelectedProductsMenu();
+                      dispatch(removeProducts(selectedProductIds)).then((removedIds) => {
+                        console.log('finish ', removedIds);
+                        onMenuItemClick();
+                        closeSelectedProductsMenu();
+                        dispatch(getProducts());
+                      });
                     }}
                   >
                     <ListItemIcon className="min-w-40">

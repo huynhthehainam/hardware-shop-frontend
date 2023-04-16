@@ -71,4 +71,20 @@ export const getAllCategories = () => {
   });
 };
 
+export const addPricePerMass = (data) => {
+  return new Promise((resolve, reject) => {
+    mainAxios.post(urlConfig.addPricePerMass, data).then((resp) => {
+      resolve();
+    });
+  });
+};
+
+export const payAllDebt = (id) => {
+  return new Promise((resolve, reject) => {
+    mainAxios.post(urlConfig.payAllDebtById(id)).then((resp) => {
+      resolve();
+    });
+  });
+};
+
 export default { getAllCountries };

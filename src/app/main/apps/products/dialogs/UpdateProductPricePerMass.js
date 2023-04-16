@@ -14,7 +14,7 @@ import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllCategories } from 'custom-axios/commonRequest';
+import { addPricePerMass, getAllCategories } from 'custom-axios/commonRequest';
 import { closeDialog } from 'app/store/fuse/dialogSlice';
 import _ from 'lodash';
 
@@ -131,8 +131,14 @@ export default (props) => {
           onClick={() => {
             const data = getValues();
             console.log(data);
-            dispatch(closeDialog());
-            onUpdated();
+            const validatedData = {
+              categoryIds: data.categories.map((e) => e.id),
+              amountOfCash: data.amount,
+            };
+            addPricePerMass(validatedData).then(() => {
+              dispatch(closeDialog());
+              if (onUpdated) onUpdated();
+            });
           }}
           disabled={_.isEmpty(dirtyFields) || !isValid}
           color="secondary"

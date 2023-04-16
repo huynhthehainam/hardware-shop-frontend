@@ -1,4 +1,3 @@
-import Button from '@mui/material/Button';
 import Icon from '@mui/material/Icon';
 import Input from '@mui/material/Input';
 import Paper from '@mui/material/Paper';
@@ -6,25 +5,22 @@ import { ThemeProvider } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { motion } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { selectMainTheme } from 'app/store/fuse/settingsSlice';
 import { useDebounce } from '@fuse/hooks';
 import { useTranslation } from 'react-i18next';
-import { openDialog } from 'app/store/fuse/dialogSlice';
-import { setProductsSearchText, getProducts, setPage } from './store/productsSlice';
-import UpdateProductPricePerMass from './dialogs/UpdateProductPricePerMass';
+import { getShops, setPage, setSearchText } from './store/shopsSlice';
 
-function ProductsHeader() {
+function ShopsHeader() {
   const dispatch = useDispatch();
-  const searchText = useSelector((state) => state.products.products.searchText);
+  const searchText = useSelector((state) => state.shops.shops.searchText);
   const mainTheme = useSelector(selectMainTheme);
-  const { t } = useTranslation('products');
+  const { t } = useTranslation('shops');
   const debounce = useDebounce((e) => {
     dispatch(setPage(0));
-    dispatch(getProducts());
+    dispatch(getShops());
   }, 500);
   const handleSearchChanged = (ev) => {
-    dispatch(setProductsSearchText(ev.target.value ?? ''));
+    dispatch(setSearchText(ev.target.value ?? ''));
     debounce(ev);
   };
   return (
@@ -73,50 +69,8 @@ function ProductsHeader() {
           </Paper>
         </ThemeProvider>
       </div>
-      <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}
-      >
-        <Button
-          component={Link}
-          to="/apps/product/new"
-          className="whitespace-nowrap"
-          variant="contained"
-          color="secondary"
-        >
-          <span className="hidden sm:flex">{t('ADD_NEW_PRODUCT_BUTTON')}</span>
-          <span className="flex sm:hidden">{t('NEW_BUTTON')}</span>
-        </Button>
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}
-      >
-        <Button
-          onClick={() => {
-            dispatch(
-              openDialog({
-                maxWidth: 'xs',
-                fullWidth: true,
-                children: (
-                  <UpdateProductPricePerMass
-                    onUpdated={() => {
-                      dispatch(getProducts());
-                    }}
-                  />
-                ),
-              })
-            );
-          }}
-          className="whitespace-nowrap ml-4"
-          variant="contained"
-          color="secondary"
-        >
-          <span className="flex">{t('UPDATE_PRICE_PER_MASS_BUTTON')}</span>
-        </Button>
-      </motion.div>
     </div>
   );
 }
 
-export default ProductsHeader;
+export default ShopsHeader;

@@ -181,24 +181,42 @@ function ProductsTable(props) {
                   </TableCell>
 
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="right">
-                    {n.pricePerMass && n.pricePerMass.toLocaleString()}
-                    {n.pricePerMass && <span>VND</span>}
+                    {n.pricePerMass !== null &&
+                      n.pricePerMass !== undefined &&
+                      n.pricePerMass.toLocaleString()}
+                    {n.pricePerMass !== null && n.pricePerMass !== undefined && <span>VND</span>}
                   </TableCell>
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="right">
-                    {n.percentForFamiliarCustomer && n.percentForFamiliarCustomer}
-                    {n.percentForFamiliarCustomer && <span>%</span>}
+                    {n.percentForFamiliarCustomer !== null &&
+                      n.percentForFamiliarCustomer !== undefined &&
+                      n.percentForFamiliarCustomer}
+                    {n.percentForFamiliarCustomer !== null &&
+                      n.percentForFamiliarCustomer !== undefined && <span>%</span>}
                   </TableCell>
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="right">
-                    {n.percentForCustomer && n.percentForCustomer}
-                    {n.percentForCustomer && <span>%</span>}
+                    {n.percentForCustomer !== null &&
+                      n.percentForCustomer !== undefined &&
+                      n.percentForCustomer}
+                    {n.percentForCustomer !== null && n.percentForCustomer !== undefined && (
+                      <span>%</span>
+                    )}
                   </TableCell>
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="right">
-                    {n.priceForFamiliarCustomer && n.priceForFamiliarCustomer.toLocaleString()}
-                    {n.priceForFamiliarCustomer && <span> {shop.cashUnitName} </span>}
+                    {n.priceForFamiliarCustomer !== null &&
+                      n.priceForFamiliarCustomer !== undefined &&
+                      n.priceForFamiliarCustomer.toLocaleString()}
+                    {n.priceForFamiliarCustomer !== null &&
+                      n.priceForFamiliarCustomer !== undefined && (
+                        <span> {shop.cashUnitName} </span>
+                      )}
                   </TableCell>
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="right">
-                    {n.priceForCustomer && n.priceForCustomer.toLocaleString()}
-                    {n.priceForCustomer && <span> {shop.cashUnitName} </span>}
+                    {n.priceForCustomer !== null &&
+                      n.priceForCustomer !== undefined &&
+                      n.priceForCustomer.toLocaleString()}
+                    {n.priceForCustomer !== null && n.priceForCustomer !== undefined && (
+                      <span> {shop.cashUnitName} </span>
+                    )}
                   </TableCell>
                 </TableRow>
               );
