@@ -127,11 +127,14 @@ export default () => {
 
                   <Typography color="inherit">{shop.address}</Typography>
                   {shop.phones &&
-                    shop.phones.map((phone, index) => (
-                      <Typography key={index} color="inherit">
-                        {`${phone} (${shop.phoneOwners[index]})`}
-                      </Typography>
-                    ))}
+                    shop.phones.map((phone, index) => {
+                      console.log('phone', phone);
+                      return (
+                        <Typography key={index} color="inherit">
+                          {`${phone.ownerName} (${phone.phonePrefix}${phone.phone})`}
+                        </Typography>
+                      );
+                    })}
                   {shop.emails &&
                     shop.emails.map((email) => <Typography color="inherit">{email}</Typography>)}
                 </div>
