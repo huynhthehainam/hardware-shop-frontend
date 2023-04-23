@@ -20,6 +20,7 @@ const locale = {
   DEPOSIT_LABEL: 'Trả trước',
   REST_LABEL: 'Còn lại',
   SAVE_BUTTON: 'Lưu',
+  SAVE_DOWNLOAD_BUTTON: 'Lưu và in',
   REMOVE_BUTTON: 'Xoá',
   INVOICES_HEADER: 'Danh sách hoá đơn',
   ADD_NEW_INVOICE_BUTTON: 'Thêm hoá đơn',

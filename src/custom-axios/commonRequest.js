@@ -1,3 +1,4 @@
+import FuseUtils from '@fuse/utils/FuseUtils';
 import mainAxios from './mainAxios';
 import urlConfig from './urlConfig';
 
@@ -84,6 +85,18 @@ export const payAllDebt = (id) => {
     mainAxios.post(urlConfig.payAllDebtById(id)).then((resp) => {
       resolve();
     });
+  });
+};
+export const downloadInvoicePdf = (id, lang) => {
+  return new Promise((resolve, reject) => {
+    const apiLanguage = FuseUtils.generateApiLanguage(lang);
+    mainAxios
+      .get(urlConfig.getInvoicePdfById(id), { responseType: 'blob', params: { lang: apiLanguage } })
+      .then((resp) => {
+        const blob = resp.data;
+        const url = URL.createObjectURL(blob);
+        resolve(url);
+      });
   });
 };
 

@@ -418,12 +418,27 @@ class FuseUtils {
     });
   }
 
+  static generateApiLanguage(lang) {
+    const mapping = {
+      vi: 'Vietnamese',
+      en: 'English',
+    };
+    return mapping[lang];
+  }
+
   static fieldChangeLocaleNumber(field, ev) {
     let valueStr = ev.target.value;
     valueStr = valueStr.replaceAll(',', '');
     const value = parseFloat(valueStr);
     if (value) field.onChange(value);
     else field.onChange(0);
+  }
+
+  static downloadUrl(url) {
+    const element = document.createElement('a');
+    element.href = url;
+    element.download = 'invoice.pdf';
+    element.click();
   }
 }
 

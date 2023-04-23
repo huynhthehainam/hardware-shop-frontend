@@ -21,8 +21,28 @@ export const getProducts = createAsyncThunk(
   (data, { dispatch }) => {
     return new Promise((resolve, reject) => {
       mainAxios.get(urlConfig.getProducts).then((resp) => {
-        dispatch(setProducts(resp.data.data));
-        resolve();
+        const products = resp.data.data;
+        const promises = products.map(
+          (p) =>
+            new Promise((downloadResolve) => {
+              mainAxios
+                .get(urlConfig.getProductThumbnailById(p.id), { responseType: 'blob' })
+                .then((downloadResp) => {
+                  const blob = downloadResp.data;
+                  const url = URL.createObjectURL(blob);
+                  p.thumbnail = url;
+                  downloadResolve(p);
+                })
+                .catch((e) => {
+                  p.thumbnail = null;
+                  downloadResolve(p);
+                });
+            })
+        );
+        Promise.all(promises).then((values) => {
+          dispatch(setProducts(values));
+          resolve();
+        });
       });
     });
   }
@@ -47,7 +67,7 @@ export const createInvoice = createAsyncThunk(
       mainAxios
         .post(urlConfig.createInvoice, data)
         .then((resp) => {
-          resolve();
+          resolve(resp.data.data);
         })
         .catch((e) => {
           reject();

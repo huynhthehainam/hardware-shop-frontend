@@ -7,6 +7,7 @@ import {
   CircularProgress,
   Button,
   Icon,
+  Box,
   InputAdornment,
   Typography,
 } from '@mui/material';
@@ -41,6 +42,7 @@ const Detail = (props) => {
       setValue('rest', rest);
     });
   }, 500);
+  const inventoryNumber = getValues(`details.${index}.inventoryNumber`);
   return (
     <div className="flex w-full">
       <div className="flex flex-col w-1/4">
@@ -73,6 +75,9 @@ const Detail = (props) => {
                 valueStr = valueStr.replaceAll(',', '');
                 let value = parseFloat(valueStr);
                 if (!value) value = 0;
+                if (value > inventoryNumber) {
+                  value = 0;
+                }
                 field.onChange(value);
                 const priceStr = getValues(`details.${index}.price`);
                 const price = parseFloat(priceStr);
@@ -85,7 +90,11 @@ const Detail = (props) => {
               className="mt-8 mb-16  w-full"
               label={t('QUANTITY_LABEL')}
               id="pricePerMass"
-              InputProps={{}}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">{`< ${inventoryNumber}`}</InputAdornment>
+                ),
+              }}
               type="number"
               variant="outlined"
             />
@@ -226,9 +235,18 @@ export default () => {
           onChange={(event, newValue) => {
             setSelectedProduct(newValue);
           }}
-          getOptionLabel={(item) => {
-            return `${item.name}`;
+          getOptionDisabled={(item) => {
+            return item.inventoryNumber <= 0;
           }}
+          getOptionLabel={(item) => {
+            return `${item.name} (${item.inventoryNumber})`;
+          }}
+          renderOption={(props, item) => (
+            <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+              <img loading="lazy" width="20" src={item.thumbnail} srcSet={item.thumbnail} alt="" />
+              {`${item.name} (${item.inventoryNumber})`}
+            </Box>
+          )}
           loading={isProductsLoading}
           renderInput={(params) => (
             <TextField
@@ -260,8 +278,10 @@ export default () => {
               if (selectedProduct) {
                 console.log('select', selectedProduct);
                 if (!_.find(fields, (e) => e.productId === selectedProduct.id)) {
+                  console.log('selected product', selectedProduct);
                   append({
                     productId: selectedProduct.id,
+                    inventoryNumber: selectedProduct.inventoryNumber,
                     description: '',
                     quantity: 0,
                     originalPrice: selectedProduct.originalPrice ?? 0,

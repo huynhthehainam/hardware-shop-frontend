@@ -10,7 +10,6 @@ import Typography from '@mui/material/Typography';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { Button, Icon } from '@mui/material';
 
 const Root = styled('div')(({ theme }) => ({
   '& table ': {
@@ -57,16 +56,6 @@ export default () => {
   return (
     <>
       <Root className="flex-grow flex-shrink-0 p-0">
-        <div className="w-xl mx-auto mb-12">
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => {}}
-            startIcon={<Icon className="hidden sm:flex">download</Icon>}
-          >
-            {t('DOWNLOAD_BUTTON')}
-          </Button>
-        </div>
         <Card className="w-xl mx-auto shadow-0">
           <CardContent className="p-20 print:p-0">
             <div className="flex justify-between">
@@ -128,7 +117,6 @@ export default () => {
                   <Typography color="inherit">{shop.address}</Typography>
                   {shop.phones &&
                     shop.phones.map((phone, index) => {
-                      console.log('phone', phone);
                       return (
                         <Typography key={index} color="inherit">
                           {`${phone.ownerName} (${phone.phonePrefix}${phone.phone})`}

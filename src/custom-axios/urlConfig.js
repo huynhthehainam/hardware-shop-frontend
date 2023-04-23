@@ -37,6 +37,7 @@ const urlConfig = {
   addPricePerMass: '/api/products/addPricePerMass',
   softlyRemoveProductById: (id) => `/api/products/${id}/softlyDelete`,
   payAllDebtById: (id) => `/api/customers/${id}/payAllDebt`,
+  getInvoicePdfById: (id) => `/api/invoices/${id}/pdf`,
 };
 
 export default urlConfig;
