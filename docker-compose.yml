@@ -4,11 +4,6 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
-      args:
-        - FAST_REFRESH=false
-        - REACT_APP_MAP_KEY=
-        - ESLINT_NO_DEV_ERRORS=false
-        - REACT_APP_API_URL=https://api.cuahangsatthep.shop
     container_name: web-odm-frontend
     restart: unless-stopped
     ports:
