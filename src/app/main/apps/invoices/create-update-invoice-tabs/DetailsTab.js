@@ -91,9 +91,10 @@ const Detail = (props) => {
               label={t('QUANTITY_LABEL')}
               id="pricePerMass"
               InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">{`< ${inventoryNumber}`}</InputAdornment>
-                ),
+                endAdornment:
+                  mode === constants.NEW_MODE ? (
+                    <InputAdornment position="end">{`< ${inventoryNumber}`}</InputAdornment>
+                  ) : undefined,
               }}
               type="number"
               variant="outlined"

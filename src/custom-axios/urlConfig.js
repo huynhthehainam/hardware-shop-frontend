@@ -38,6 +38,7 @@ const urlConfig = {
   softlyRemoveProductById: (id) => `/api/products/${id}/softlyDelete`,
   payAllDebtById: (id) => `/api/customers/${id}/payAllDebt`,
   getInvoicePdfById: (id) => `/api/invoices/${id}/pdf`,
+  getCustomerInvoicesPdfById: (id) => `/api/customers/${id}/allInvoicesPdf`,
 };
 
 export default urlConfig;

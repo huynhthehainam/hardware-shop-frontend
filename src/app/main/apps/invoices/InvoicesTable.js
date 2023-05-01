@@ -104,7 +104,7 @@ const InvoicesTable = () => {
         className="flex flex-1 items-center justify-center h-full"
       >
         <Typography color="textSecondary" variant="h5">
-          There are no products!
+          {t('NO_INVOICE_MESSAGE')}
         </Typography>
       </motion.div>
     );

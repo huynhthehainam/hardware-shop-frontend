@@ -434,10 +434,10 @@ class FuseUtils {
     else field.onChange(0);
   }
 
-  static downloadUrl(url) {
+  static downloadUrl(url, output = 'invoice.pdf') {
     const element = document.createElement('a');
     element.href = url;
-    element.download = 'invoice.pdf';
+    element.download = output;
     element.click();
   }
 }

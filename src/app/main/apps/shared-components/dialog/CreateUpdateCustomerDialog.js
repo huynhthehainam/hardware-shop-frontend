@@ -61,6 +61,7 @@ const CreateCustomerDialog = (props) => {
   }, [customer, countries, reset]);
   const handleSaveCustomer = () => {
     const data = getValues();
+    console.log('create customer data', data);
     if (data.id === 0) {
       props.createCustomer(data);
     } else {

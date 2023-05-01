@@ -11,6 +11,7 @@ import { Tab, Tabs } from '@mui/material';
 import { useParams } from 'react-router';
 import { useDeepCompareEffect } from '@fuse/hooks';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import reducer from './store';
 import ProductHeader from './ProductHeader';
 import BasicInfoTab from './create-update-product-tabs/BasicInfoTab';
@@ -40,6 +41,7 @@ const schema = yup.object().shape({
   thumbnailId: yup.string().required(),
 });
 const CreateOrUpdateProduct = () => {
+  const { t } = useTranslation('products');
   const [tab, setTab] = useState(0);
   const dispatch = useDispatch();
   const routeParams = useParams();
@@ -83,10 +85,10 @@ const CreateOrUpdateProduct = () => {
             scrollButtons="auto"
             classes={{ root: 'w-full h-64' }}
           >
-            <Tab className="h-64" label="Basic Info" />
-            <Tab className="h-64" label="Product Images" />
-            <Tab className="h-64" label="Pricing" />
-            <Tab className="h-64" label="Inventory" />
+            <Tab className="h-64" label={t('BASIC_TAB_LABEL')} />
+            <Tab className="h-64" label={t('PRODUCT_IMAGES_TAB_LABEL')} />
+            <Tab className="h-64" label={t('PRICING_TAB_LABEL')} />
+            <Tab className="h-64" label={t('INVENTORY_TAB_LABEL')} />
           </Tabs>
         }
         content={

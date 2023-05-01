@@ -19,9 +19,14 @@ import FuseLoading from '@fuse/core/FuseLoading';
 
 import { closeDialog } from 'app/store/fuse/dialogSlice';
 import FuseScrollbars from '@fuse/core/FuseScrollbars';
-import { getCustomerDetailById, getCustomerInvoicesById } from 'custom-axios/commonRequest';
+import {
+  downloadCustomerInvoicesPdf,
+  getCustomerDetailById,
+  getCustomerInvoicesById,
+} from 'custom-axios/commonRequest';
 import moment from 'moment';
 import { useHistory } from 'react-router';
+import FuseUtils from '@fuse/utils/FuseUtils';
 
 const rows = [
   {
@@ -53,6 +58,8 @@ const rows = [
 export default (props) => {
   const [customer, setCustomer] = useState(null);
   const dispatch = useDispatch();
+  const lang = useSelector(({ i18n }) => i18n.language);
+
   const { t } = useTranslation('customers');
   const { customerId } = props;
   const shop = useSelector(({ auth }) => auth.user.shop);
@@ -143,6 +150,17 @@ export default (props) => {
       <DialogActions>
         <Button onClick={() => dispatch(closeDialog())} color="error">
           {t('CANCEL_BUTTON')}
+        </Button>
+        <Button
+          onClick={() => {
+            downloadCustomerInvoicesPdf(customerId, lang).then((url) => {
+              FuseUtils.downloadUrl(url);
+              dispatch(closeDialog());
+            });
+          }}
+          color="secondary"
+        >
+          {t('DOWNLOAD_BUTTON')}
         </Button>
       </DialogActions>
     </>

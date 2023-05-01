@@ -37,5 +37,6 @@ const locale = {
   CUSTOMER_IS_FAMILIAR_LABEL: 'Khách quen',
   CANCEL_BUTTON: 'Huỷ',
   CREATE_CUSTOMER_TITLE: 'Thêm khách hàng {{name}}',
+  NO_INVOICE_MESSAGE: 'Không có hoá đơn',
 };
 export default locale;

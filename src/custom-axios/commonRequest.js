@@ -48,7 +48,6 @@ export const getCustomerInvoicesById = (id) => {
 };
 export const createCustomer = (data) => {
   return new Promise((resolve, reject) => {
-    if (data.phone && data.phone !== '') data.phone = `+84${data.phone}`;
     mainAxios.post(urlConfig.createCustomer, data).then((resp) => {
       resolve();
     });
@@ -100,4 +99,19 @@ export const downloadInvoicePdf = (id, lang) => {
   });
 };
 
+export const downloadCustomerInvoicesPdf = (id, lang) => {
+  return new Promise((resolve, reject) => {
+    const apiLanguage = FuseUtils.generateApiLanguage(lang);
+    mainAxios
+      .get(urlConfig.getCustomerInvoicesPdfById(id), {
+        responseType: 'blob',
+        params: { lang: apiLanguage },
+      })
+      .then((resp) => {
+        const blob = resp.data;
+        const url = URL.createObjectURL(blob);
+        resolve(url);
+      });
+  });
+};
 export default { getAllCountries };

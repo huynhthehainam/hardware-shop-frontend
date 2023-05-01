@@ -34,6 +34,11 @@ const locale = {
   AMOUNT_LABEL: 'Khoảng tiền',
   CANCEL_BUTTON: 'Huỷ',
   UPDATE_BUTTON: 'Cập nhật',
+  BASIC_TAB_LABEL: 'Thông tin chung',
+  PRODUCT_IMAGES_TAB_LABEL: 'Hình ảnh',
+  PRICING_TAB_LABEL: 'Giá',
+  INVENTORY_TAB_LABEL: 'Tồn kho',
+  NEW_PRODUCT_PLACEHOLDER: 'Sản phẩm mới',
 };
 
 export default locale;
