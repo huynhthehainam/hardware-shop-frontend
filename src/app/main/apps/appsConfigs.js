@@ -15,6 +15,7 @@ import ProductsAppConfig from './products/ProductsAppConfig';
 import InvoicesAppConfig from './invoices/InvoicesAppConfig';
 import CustomersAppConfig from './customers/CustomersAppConfig';
 import ShopsAppConfig from './shops/ShopsAppConfig';
+import UnitsAppConfig from './units/UnitsAppConfig';
 
 const appsConfigs = [
   AnalyticsDashboardAppConfig,
@@ -34,6 +35,7 @@ const appsConfigs = [
   InvoicesAppConfig,
   CustomersAppConfig,
   ShopsAppConfig,
+  UnitsAppConfig,
 ];
 
 export default appsConfigs;

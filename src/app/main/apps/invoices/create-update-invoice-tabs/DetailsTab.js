@@ -23,6 +23,7 @@ const Detail = (props) => {
   const formContext = useFormContext();
   const { control, watch, getValues, setValue } = formContext;
   const { t } = useTranslation('invoices');
+
   const shop = useSelector(({ auth }) => auth.user.shop);
   const mode = useSelector(({ invoices }) => invoices.createUpdateInvoice.mode);
   const totalCostDebounce = useDebounce((totalCost) => {
@@ -205,6 +206,7 @@ export default () => {
   const [isProductsLoading, setIsProductsLoading] = useState(true);
   const { append, remove, fields } = useFieldArray({ control, name: 'details' });
   const { t } = useTranslation('invoices');
+  const unitT = useTranslation('units').t;
   const products = useSelector(({ invoices }) => invoices.createUpdateInvoice.products);
   const mode = useSelector(({ invoices }) => invoices.createUpdateInvoice.mode);
   const dispatch = useDispatch();
@@ -224,6 +226,7 @@ export default () => {
       </Typography>
     );
   }
+  console.log('unit translation', unitT);
   return (
     <div>
       <div className="flex w-full">
@@ -290,7 +293,9 @@ export default () => {
                       customer.isFamiliar && selectedProduct.priceForFamiliarCustomer
                         ? selectedProduct.priceForFamiliarCustomer
                         : selectedProduct.priceForCustomer,
-                    productName: `${selectedProduct.name} | ${selectedProduct.unitName}`,
+                    productName: `${selectedProduct.name} | ${unitT(
+                      selectedProduct.unitName.toUpperCase()
+                    )}`,
                     totalCost: 0.0,
                   });
                 }
