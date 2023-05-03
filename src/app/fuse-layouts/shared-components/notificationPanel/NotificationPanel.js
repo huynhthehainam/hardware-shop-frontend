@@ -52,6 +52,7 @@ function NotificationPanel(props) {
 
   useEffect(() => {
     notifications.forEach((item) => {
+      console.log('notification', item);
       const { id: key, message, options = {}, dismissed = false } = item;
 
       if (dismissed) {
@@ -65,26 +66,28 @@ function NotificationPanel(props) {
       }
 
       // display snackbar using notistack
-      enqueueSnackbar(message, {
-        key,
-        ...options,
-        // autoHideDuration: 3000,
-        content: () => (
-          <NotificationTemplate
-            item={item}
-            onClose={() => {
-              closeSnackbar(key);
-              dispatch(dismissNotification(key));
-            }}
-          />
-        ),
-        onClose: (event, reason, myKey) => {
-          if (options.onClose) {
-            options.onClose(event, reason, myKey);
-          }
-        },
-        onExited: (event, myKey) => {},
-      });
+      if (!item.isOld) {
+        enqueueSnackbar(message, {
+          key,
+          ...options,
+          // autoHideDuration: 3000,
+          content: () => (
+            <NotificationTemplate
+              item={item}
+              onClose={() => {
+                closeSnackbar(key);
+                dispatch(dismissNotification(key));
+              }}
+            />
+          ),
+          onClose: (event, reason, myKey) => {
+            if (options.onClose) {
+              options.onClose(event, reason, myKey);
+            }
+          },
+          onExited: (event, myKey) => {},
+        });
+      }
 
       // keep track of snackbars that we've displayed
       storeDisplayed(key);
@@ -96,7 +99,7 @@ function NotificationPanel(props) {
       dispatch(closeNotificationPanel());
     }
     // eslint-disable-next-line
-	}, [location, dispatch]);
+  }, [location, dispatch]);
 
   function handleClose() {
     dispatch(closeNotificationPanel());

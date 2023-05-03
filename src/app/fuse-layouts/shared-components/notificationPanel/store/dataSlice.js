@@ -7,7 +7,12 @@ export const getNotifications = createAsyncThunk(
   (data, { dispatch, getState }) => {
     return new Promise((resolve, reject) => {
       mainAxios.get(urlConfig.getUserNotifications).then((resp) => {
-        dispatch(setNotifications(resp.data.data));
+        const notifications = resp.data.data;
+        const newNotifications = notifications.map((notification) => {
+          notification.isOld = true;
+          return notification;
+        });
+        dispatch(setNotifications(newNotifications));
       });
     });
   }

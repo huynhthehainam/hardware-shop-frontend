@@ -48,6 +48,13 @@ export const getCustomerInvoicesById = (id) => {
 };
 export const createCustomer = (data) => {
   return new Promise((resolve, reject) => {
+    const { phone } = data;
+    console.log('phone nhu lz1', phone.length);
+    if (!phone || phone.length === 0) {
+      console.log('phone nhu lz', phone);
+      data.phone = null;
+      data.phoneCountryId = null;
+    }
     mainAxios.post(urlConfig.createCustomer, data).then((resp) => {
       resolve();
     });

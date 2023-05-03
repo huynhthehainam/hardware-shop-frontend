@@ -149,7 +149,7 @@ const InvoicesTable = () => {
                   </TableCell>
 
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="left">
-                    {n.customerPhone}
+                    {`${n.customerPhonePrefix ?? ''}${n.customerPhone ?? ''}`}
                   </TableCell>
 
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="left">
