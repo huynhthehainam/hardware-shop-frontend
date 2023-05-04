@@ -102,6 +102,17 @@ function CustomersHeader() {
         >
           {t('CREATE_BUTTON')}
         </Button>
+        <Button
+          className="whitespace-nowrap mx-4"
+          variant="contained"
+          color="secondary"
+          onClick={() => {
+            console.log('print debts');
+          }}
+          startIcon={<Icon className="hidden sm:flex">print</Icon>}
+        >
+          {t('PRINT_DEBTS_BUTTON')}
+        </Button>
       </motion.div>
     </div>
   );

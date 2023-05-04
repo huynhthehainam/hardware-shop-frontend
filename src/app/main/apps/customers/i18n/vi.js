@@ -32,5 +32,6 @@ const locale = {
   PAY_FULL_DEBT_TOOLTIP: 'Trả hết nợ',
   OK_BUTTON: 'Đồng ý',
   DOWNLOAD_BUTTON: 'Tải về',
+  PRINT_DEBTS_BUTTON: 'In bảng nợ',
 };
 export default locale;
