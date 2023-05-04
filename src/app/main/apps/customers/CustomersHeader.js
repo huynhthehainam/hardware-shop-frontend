@@ -10,11 +10,14 @@ import { selectMainTheme } from 'app/store/fuse/settingsSlice';
 import { useDebounce } from '@fuse/hooks';
 import { useTranslation } from 'react-i18next';
 import { closeDialog, openDialog } from 'app/store/fuse/dialogSlice';
-import { createCustomer } from 'custom-axios/commonRequest';
+import { createCustomer, downloadCustomersDebtPdf } from 'custom-axios/commonRequest';
+import FuseUtils from '@fuse/utils/FuseUtils';
 import { setSearchText, getCustomers, setPage } from './store/customersSlice';
 import { CreateUpdateCustomerDialog } from '../shared-components';
 
 function CustomersHeader() {
+  const lang = useSelector(({ i18n }) => i18n.language);
+
   const dispatch = useDispatch();
   const searchText = useSelector((state) => state.customers.customers.searchText);
   const mainTheme = useSelector(selectMainTheme);
@@ -108,6 +111,9 @@ function CustomersHeader() {
           color="secondary"
           onClick={() => {
             console.log('print debts');
+            downloadCustomersDebtPdf(lang).then((url) => {
+              FuseUtils.downloadUrl(url, 'debt.pdf');
+            });
           }}
           startIcon={<Icon className="hidden sm:flex">print</Icon>}
         >

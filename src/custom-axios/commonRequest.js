@@ -121,4 +121,21 @@ export const downloadCustomerInvoicesPdf = (id, lang) => {
       });
   });
 };
+export const downloadCustomersDebtPdf = (lang) => {
+  return new Promise((resolve) => {
+    const apiLanguage = FuseUtils.generateApiLanguage(lang);
+    mainAxios
+      .get(urlConfig.getAllDebtsPdf, {
+        responseType: 'blob',
+        params: {
+          lang: apiLanguage,
+        },
+      })
+      .then((resp) => {
+        const blob = resp.data;
+        const url = URL.createObjectURL(blob);
+        resolve(url);
+      });
+  });
+};
 export default { getAllCountries };

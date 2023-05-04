@@ -39,6 +39,7 @@ const urlConfig = {
   payAllDebtById: (id) => `/api/customers/${id}/payAllDebt`,
   getInvoicePdfById: (id) => `/api/invoices/${id}/pdf`,
   getCustomerInvoicesPdfById: (id) => `/api/customers/${id}/allInvoicesPdf`,
+  getAllDebtsPdf: '/api/customers/allDebtsPdf',
 };
 
 export default urlConfig;
