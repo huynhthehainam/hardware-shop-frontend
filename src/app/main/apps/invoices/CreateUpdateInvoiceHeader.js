@@ -12,15 +12,17 @@ import useNotification from '@fuse/hooks/useNotification';
 import { downloadInvoicePdf } from 'custom-axios/commonRequest';
 import { Button } from '@mui/material';
 import FuseUtils from '@fuse/utils/FuseUtils';
+import { openDialog } from 'app/store/fuse/dialogSlice';
 import constants from './constants';
 import { createInvoice, restoreInvoiceById } from './store/createUpdateInvoiceSlice';
+import PreviewDialog from './dialogs/PreviewDialog';
 
 export default () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRestoreSubmitting, setIsRestoreSubmitting] = useState(false);
   const dispatch = useDispatch();
-  const methods = useFormContext();
-  const { formState, watch, getValues, handleSubmit } = methods;
+  const formContext = useFormContext();
+  const { formState, watch, getValues, handleSubmit } = formContext;
   const { isValid, dirtyFields, errors } = formState;
   const { t } = useTranslation('invoices');
   const customer = watch('customer');
@@ -49,17 +51,15 @@ export default () => {
     console.log('validated data', validatedData);
     dispatch(createInvoice(validatedData))
       .then((resp) => {
-        setIsSubmitting(false);
         if (isAllowedToPrint) {
           const invoiceId = resp.payload.id;
           downloadInvoicePdf(invoiceId, lang).then((url) => {
-            console.log('download file', url);
-
             FuseUtils.downloadUrl(url);
             showNotification({
               translation: 'CREATE_SUCCESSFULLY',
               options: { variant: 'success' },
             });
+            setIsSubmitting(false);
             history.push('/apps/invoices');
           });
         } else {
@@ -67,6 +67,7 @@ export default () => {
             translation: 'CREATE_SUCCESSFULLY',
             options: { variant: 'success' },
           });
+          setIsSubmitting(false);
           history.push('/apps/invoices');
         }
       })
@@ -177,6 +178,26 @@ export default () => {
             }}
           >
             {t('SAVE_DOWNLOAD_BUTTON')}
+          </LoadingButton>
+        )}
+        {(mode === constants.UPDATE_MODE || mode === constants.NEW_MODE) && (
+          <LoadingButton
+            className="whitespace-nowrap mx-4"
+            variant="contained"
+            loading={isSubmitting}
+            color="secondary"
+            disabled={!isValid}
+            onClick={() => {
+              dispatch(
+                openDialog({
+                  maxWidth: 'lg',
+                  fullWidth: true,
+                  children: <PreviewDialog formContext={formContext} />,
+                })
+              );
+            }}
+          >
+            {t('PREVIEW_BUTTON')}
           </LoadingButton>
         )}
       </motion.div>

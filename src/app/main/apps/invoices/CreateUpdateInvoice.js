@@ -1,6 +1,6 @@
 import { styled } from '@mui/material/styles';
 import FusePageCarded from '@fuse/core/FusePageCarded';
-import { FormProvider, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
 
@@ -10,16 +10,31 @@ import withReducer from 'app/store/withReducer';
 import { useDeepCompareEffect } from '@fuse/hooks';
 import * as yup from 'yup';
 import FuseLoading from '@fuse/core/FuseLoading';
-import { Tab, Tabs } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import {
+  Autocomplete,
+  Box,
+  Button,
+  CircularProgress,
+  Icon,
+  InputAdornment,
+  TextField,
+} from '@mui/material';
+import { closeDialog, openDialog } from 'app/store/fuse/dialogSlice';
 import reducer from './store';
-import BasicInfoTab from './create-update-invoice-tabs/BasicInfoTab';
 import constants from './constants';
-import { getInvoiceById, setMode, setNewInvoice } from './store/createUpdateInvoiceSlice';
-import DetailsTab from './create-update-invoice-tabs/DetailsTab';
+import {
+  createCustomer,
+  getCustomers,
+  getInvoiceById,
+  getProducts,
+  setMode,
+  setNewInvoice,
+} from './store/createUpdateInvoiceSlice';
 import CreateUpdateInvoiceHeader from './CreateUpdateInvoiceHeader';
-import PdfTab from './create-update-invoice-tabs/PdfTab';
+import { CreateUpdateCustomerDialog } from '../shared-components';
+import Detail from './InvoiceDetail';
 
 const Root = styled(FusePageCarded)(({ theme }) => ({
   '& .FusePageCarded-header': {
@@ -41,6 +56,14 @@ const CreateUpdateInvoice = () => {
   const { t } = useTranslation('invoices');
   const invoice = useSelector(({ invoices }) => invoices.createUpdateInvoice.invoice);
   const routeParams = useParams();
+  const products = useSelector(({ invoices }) => invoices.createUpdateInvoice.products);
+  const unitT = useTranslation('units').t;
+  const shop = useSelector(({ auth }) => auth.user.shop);
+  const [isCustomersLoading, setIsCustomersLoading] = useState(true);
+  const mode = useSelector(({ invoices }) => invoices.createUpdateInvoice.mode);
+  const customers = useSelector(({ invoices }) => invoices.createUpdateInvoice.customers);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isProductsLoading, setIsProductsLoading] = useState(true);
   const dispatch = useDispatch();
   useDeepCompareEffect(() => {
     const { invoiceId } = routeParams;
@@ -59,12 +82,26 @@ const CreateUpdateInvoice = () => {
     defaultValues: {},
     resolver: yupResolver(schema),
   });
-  const { watch, reset } = formContext;
+  const { watch, reset, control, formState, setValue, getValues } = formContext;
+  const { append, remove, fields } = useFieldArray({ control, name: 'details' });
+  const { errors } = formState;
   useEffect(() => {
     reset(invoice);
   }, [reset, invoice]);
+  useEffect(() => {
+    dispatch(getCustomers()).then(() => {
+      setIsCustomersLoading(false);
+    });
+    dispatch(getProducts()).then(() => {
+      setIsProductsLoading(false);
+    });
+  }, [dispatch]);
 
   const form = watch();
+  const customer = watch('customer');
+  const handleRemoveRow = (index) => {
+    remove(index);
+  };
   if (_.isEmpty(form)) {
     return <FuseLoading />;
   }
@@ -73,53 +110,298 @@ const CreateUpdateInvoice = () => {
       <Root
         innerScroll
         header={<CreateUpdateInvoiceHeader />}
-        contentToolbar={
-          <Tabs
-            value={tab}
-            onChange={(event, value) => {
-              setTab(value);
-            }}
-            indicatorColor="primary"
-            textColor="primary"
-            variant="scrollable"
-            scrollButtons="auto"
-            classes={{ root: 'w-full h-64' }}
-          >
-            <Tab className="h-64" label={t('BASIC_INFO_TAB')} />
-            <Tab className="h-64" label={t('DETAIL_TAB')} />
-            <Tab className="h-64" label={t('PDF_TAB')} />
-          </Tabs>
-        }
         content={
-          <div className="p-16 sm:p-24 max-w-2xl w-full">
-            <div className={tab !== 0 ? 'hidden' : ''}>
-              <BasicInfoTab />
-            </div>
-            <div className={tab !== 1 ? 'hidden' : ''}>
-              <DetailsTab />
-            </div>
-            <div className={tab !== 2 ? 'hidden' : ''}>
-              <PdfTab
-                order={{
-                  reference: 'asfasf',
-                  date: '2023-02-23 14:14:14',
-                  customer: {
-                    firstName: 'fas',
-                    lastName: 'asf',
-                    invoiceAddress: {
-                      address: 'asfasf',
-                    },
-                    phone: 'fsaf',
-                    email: 'asfas',
-                  },
-                  products: [],
-                  subtotal: 12,
-                  tax: 233,
-                  discount: 123,
-                  total: 2424,
-                }}
+          <div className="p-16 sm:p-24 w-full">
+            <Controller
+              name="customer"
+              control={control}
+              defaultValue={[]}
+              render={({ field: { onChange, value } }) => (
+                <Autocomplete
+                  loading={isCustomersLoading}
+                  disabled={mode === constants.REVIEW_MODE}
+                  className="mt-8 mb-16"
+                  disablePortal
+                  getOptionLabel={(item) => {
+                    let label = item.name;
+                    if (item.phone) {
+                      label += ` | ${item.phonePrefix}${item.phone}`;
+                    } else if (item.address) {
+                      label += ` | ${item.address}`;
+                    }
+                    return label;
+                  }}
+                  filterOptions={(options, state) => {
+                    const filteredOptions = [];
+                    const { inputValue } = state;
+                    options.forEach((item) => {
+                      const query = `${item.name ?? ''}${item.phone ?? ''}${item.address ?? ''}`;
+                      if (query.toLowerCase().includes(state.inputValue.toLowerCase())) {
+                        filteredOptions.push(item);
+                      }
+                    });
+                    if (inputValue !== '' && filteredOptions.length === 0) {
+                      filteredOptions.push({
+                        id: 0,
+                        inputValue,
+                        name: `${t('ADD_BUTTON')} "${inputValue}"`,
+                      });
+                    }
+                    return filteredOptions;
+                  }}
+                  isOptionEqualToValue={(option, newValue) => {
+                    return option.id === newValue.id;
+                  }}
+                  options={[...customers]}
+                  value={value}
+                  onChange={(event, newValue) => {
+                    if (newValue.id === 0) {
+                      dispatch(
+                        openDialog({
+                          children: (
+                            <CreateUpdateCustomerDialog
+                              customer={{
+                                id: 0,
+                                address: '',
+                                name: newValue.inputValue,
+                                phone: '',
+                                isFamiliar: false,
+                              }}
+                              createCustomer={(data) => {
+                                dispatch(createCustomer(data)).then(() => {
+                                  dispatch(closeDialog());
+                                  setIsCustomersLoading(true);
+                                  dispatch(getCustomers()).then(() => {
+                                    setIsCustomersLoading(false);
+                                  });
+                                });
+                              }}
+                            />
+                          ),
+                        })
+                      );
+                    } else {
+                      setValue('customerDebt', newValue.debt);
+                      onChange(newValue);
+                    }
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      placeholder={t('SELECT_CUSTOMER_PLACE_HOLDER')}
+                      label={t('CUSTOMER_LABEL')}
+                      variant="outlined"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                          <>
+                            {isCustomersLoading ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : null}
+                            {params.InputProps.endAdornment}
+                          </>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+              )}
+            />
+            <div className="flex flex-col sm:flex-row w-full items-center sm:space-x-16">
+              <Controller
+                name="customerDebt"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    disabled
+                    {...field}
+                    value={field.value.toLocaleString()}
+                    className="mt-8 mb-16"
+                    label={t('DEBT_LABEL')}
+                    id="pricePerMass"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">{shop.cashUnitName}</InputAdornment>
+                      ),
+                    }}
+                    variant="outlined"
+                    fullWidth
+                  />
+                )}
+              />
+              <Controller
+                name="totalCost"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    value={field.value.toLocaleString()}
+                    disabled
+                    className="mt-8 mb-16"
+                    label={t('TOTAL_COST_LABEL')}
+                    id="pricePerMass"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">{shop.cashUnitName}</InputAdornment>
+                      ),
+                    }}
+                    variant="outlined"
+                    fullWidth
+                  />
+                )}
               />
             </div>
+
+            <div className="flex flex-col sm:flex-row w-full items-center sm:space-x-16">
+              <Controller
+                name="deposit"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    value={field.value.toLocaleString()}
+                    inputMode="numeric"
+                    disabled={mode === constants.REVIEW_MODE}
+                    onChange={(ev) => {
+                      let valueStr = ev.target.value;
+                      valueStr = valueStr.replaceAll(',', '');
+                      let value = parseFloat(valueStr);
+                      if (!value) value = 0;
+                      field.onChange(value);
+                      const totalCost = getValues('totalCost');
+                      const customerDebt = getValues('customerDebt');
+                      const rest = totalCost + customerDebt - value;
+                      setValue('rest', rest);
+                    }}
+                    className="mt-8 mb-16"
+                    label={t('DEPOSIT_LABEL')}
+                    id="pricePerMass"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">{shop.cashUnitName}</InputAdornment>
+                      ),
+                    }}
+                    variant="outlined"
+                    fullWidth
+                  />
+                )}
+              />
+              <Controller
+                name="rest"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    value={field.value.toLocaleString()}
+                    inputMode="numeric"
+                    disabled
+                    onChange={(e) => {}}
+                    className="mt-8 mb-16"
+                    label={t('REST_LABEL')}
+                    id="pricePerMass"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">{shop.cashUnitName}</InputAdornment>
+                      ),
+                    }}
+                    variant="outlined"
+                    fullWidth
+                  />
+                )}
+              />
+            </div>
+            {customer && (
+              <div className="flex w-full">
+                <Autocomplete
+                  className="mt-8 mb-16 flex-1"
+                  disablePortal
+                  disabled={mode === constants.REVIEW_MODE}
+                  options={[...products]}
+                  value={selectedProduct}
+                  onChange={(event, newValue) => {
+                    setSelectedProduct(newValue);
+                  }}
+                  getOptionDisabled={(item) => {
+                    return item.inventoryNumber <= 0;
+                  }}
+                  getOptionLabel={(item) => {
+                    return `${item.name} (${item.inventoryNumber})`;
+                  }}
+                  renderOption={(props, item) => (
+                    <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                      <img
+                        loading="lazy"
+                        width="20"
+                        src={item.thumbnail}
+                        srcSet={item.thumbnail}
+                        alt=""
+                      />
+                      {`${item.name} (${item.inventoryNumber})`}
+                    </Box>
+                  )}
+                  loading={isProductsLoading}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      placeholder={t('SELECT_PRODUCT_PLACE_HOLDER')}
+                      label={t('PRODUCT_LABEL')}
+                      variant="outlined"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                          <>
+                            {isProductsLoading ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : null}
+                            {params.InputProps.endAdornment}
+                          </>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+                {mode !== constants.REVIEW_MODE && (
+                  <Button
+                    className="whitespace-nowrap mx-8 mt-8 mb-16"
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      if (selectedProduct) {
+                        console.log('select', selectedProduct);
+                        if (!_.find(fields, (e) => e.productId === selectedProduct.id)) {
+                          console.log('selected product', selectedProduct);
+                          append({
+                            productId: selectedProduct.id,
+                            inventoryNumber: selectedProduct.inventoryNumber,
+                            description: '',
+                            quantity: 0,
+                            originalPrice: selectedProduct.originalPrice ?? 0,
+                            price:
+                              customer.isFamiliar && selectedProduct.priceForFamiliarCustomer
+                                ? selectedProduct.priceForFamiliarCustomer
+                                : selectedProduct.priceForCustomer,
+                            productName: `${selectedProduct.name} | ${unitT(
+                              selectedProduct.unitName.toUpperCase()
+                            )}`,
+                            totalCost: 0.0,
+                          });
+                        }
+                      }
+                    }}
+                    startIcon={<Icon className="hidden sm:flex">add</Icon>}
+                  >
+                    {t('ADD_BUTTON')}
+                  </Button>
+                )}
+              </div>
+            )}
+            {fields.map((item, index) => (
+              <Detail key={index} index={index} handleRemoveRow={handleRemoveRow} />
+            ))}
           </div>
         }
       />

@@ -38,5 +38,7 @@ const locale = {
   CANCEL_BUTTON: 'Huỷ',
   CREATE_CUSTOMER_TITLE: 'Thêm khách hàng {{name}}',
   NO_INVOICE_MESSAGE: 'Không có hoá đơn',
+  PREVIEW_BUTTON: 'Xem trước',
+  PREVIEW_INVOICE_TITLE: 'Hoá đơn khách hàng {{customerName}}',
 };
 export default locale;
