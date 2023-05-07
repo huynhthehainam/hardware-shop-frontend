@@ -70,6 +70,28 @@ export const updateCustomer = (params) => {
   });
 };
 
+export const getAllProducts = () => {
+  return new Promise((resolve, reject) => {
+    mainAxios.get(urlConfig.getProducts).then((resp) => {
+      resolve(resp.data.data);
+    });
+  });
+};
+export const downloadProductThumbnailById = (id) => {
+  return new Promise((resolve) => {
+    mainAxios
+      .get(urlConfig.getProductThumbnailById(id), { responseType: 'blob' })
+      .then((resp) => {
+        const blob = resp.data;
+        const url = URL.createObjectURL(blob);
+        resolve(url);
+      })
+      .catch(() => {
+        resolve(null);
+      });
+  });
+};
+
 export const getAllCategories = () => {
   return new Promise((resolve, reject) => {
     mainAxios.get(urlConfig.getCategories).then((resp) => {

@@ -1,5 +1,6 @@
 import mainAxios, { urlConfig } from 'custom-axios';
 
+import { downloadProductThumbnailById, getAllProducts } from 'custom-axios/commonRequest';
 import constants from '../constants';
 
 const { createSlice, createAsyncThunk } = require('@reduxjs/toolkit');
@@ -16,32 +17,25 @@ export const getCustomers = createAsyncThunk(
     });
   }
 );
+
 export const getProducts = createAsyncThunk(
   'invoices/createUpdateInvoice/getProducts',
   (data, { dispatch }) => {
     return new Promise((resolve, reject) => {
-      mainAxios.get(urlConfig.getProducts).then((resp) => {
-        const products = resp.data.data;
-        const promises = products.map(
-          (p) =>
-            new Promise((downloadResolve) => {
-              mainAxios
-                .get(urlConfig.getProductThumbnailById(p.id), { responseType: 'blob' })
-                .then((downloadResp) => {
-                  const blob = downloadResp.data;
-                  const url = URL.createObjectURL(blob);
-                  p.thumbnail = url;
-                  downloadResolve(p);
-                })
-                .catch((e) => {
-                  p.thumbnail = null;
-                  downloadResolve(p);
-                });
-            })
-        );
-        Promise.all(promises).then((values) => {
-          dispatch(setProducts(values));
-          resolve();
+      getAllProducts().then((products) => {
+        dispatch(setProducts(products));
+        resolve();
+        const promises = products.map((p) => {
+          return new Promise((downloadResolve) => {
+            downloadProductThumbnailById(p.id).then((url) => {
+              const newProduct = { ...p };
+              newProduct.thumbnail = url;
+              downloadResolve(newProduct);
+            });
+          });
+        });
+        Promise.all(promises).then((updatedProducts) => {
+          dispatch(setProducts(updatedProducts));
         });
       });
     });
