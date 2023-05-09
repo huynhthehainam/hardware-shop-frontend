@@ -14,7 +14,7 @@ const locale = {
   PRODUCT_LABEL: 'Sản phẩm',
   ADD_BUTTON: 'Thêm',
   MANAGE_INVOICES_LABEL: 'Danh sách hoá đơn',
-  NEW_INVOICE_LABEL: 'Hoá đơn mới',
+  NEW_INVOICE_LABEL: 'Hoá đơn mới {{customerName}}',
   INVOICE_DETAIL: 'Chi tiết hoá đơn',
   DEBT_LABEL: 'Nợ trước',
   DEPOSIT_LABEL: 'Trả trước',
@@ -40,5 +40,8 @@ const locale = {
   NO_INVOICE_MESSAGE: 'Không có hoá đơn',
   PREVIEW_BUTTON: 'Xem trước',
   PREVIEW_INVOICE_TITLE: 'Hoá đơn khách hàng {{customerName}}',
+  FAMILIAR_CUSTOMER: 'Khách quen',
+  PASSERSBY_CUSTOMER: 'Khách vãng lai',
+  PAY_ALL_BUTTON: 'Trả đủ',
 };
 export default locale;

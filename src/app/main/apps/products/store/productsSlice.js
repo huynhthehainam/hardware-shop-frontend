@@ -88,7 +88,7 @@ const productsSlice = createSlice({
     selectedProduct: null,
     searchText: '',
     products: [],
-    rowsPerPage: 5,
+    rowsPerPage: 20,
     page: 0,
     totalRecords: 0,
     order: {

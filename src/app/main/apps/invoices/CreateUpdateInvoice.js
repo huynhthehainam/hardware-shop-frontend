@@ -42,8 +42,8 @@ const Root = styled(FusePageCarded)(({ theme }) => ({
     height: 72,
     alignItems: 'center',
     [theme.breakpoints.up('sm')]: {
-      minHeight: 136,
-      height: 136,
+      minHeight: 96,
+      height: 96,
     },
   },
 }));
@@ -82,7 +82,7 @@ const CreateUpdateInvoice = () => {
     defaultValues: {},
     resolver: yupResolver(schema),
   });
-  const { watch, reset, control, formState, setValue, getValues } = formContext;
+  const { watch, reset, control, formState, setValue, getValues, register } = formContext;
   const { append, remove, fields } = useFieldArray({ control, name: 'details' });
   const { errors } = formState;
   useEffect(() => {
@@ -112,105 +112,111 @@ const CreateUpdateInvoice = () => {
         header={<CreateUpdateInvoiceHeader />}
         content={
           <div className="p-16 sm:p-24 w-full">
-            <Controller
-              name="customer"
-              control={control}
-              defaultValue={[]}
-              render={({ field: { onChange, value } }) => (
-                <Autocomplete
-                  loading={isCustomersLoading}
-                  disabled={mode === constants.REVIEW_MODE}
-                  className="mt-8 mb-16"
-                  disablePortal
-                  getOptionLabel={(item) => {
-                    let label = item.name;
-                    if (item.phone) {
-                      label += ` | ${item.phonePrefix}${item.phone}`;
-                    } else if (item.address) {
-                      label += ` | ${item.address}`;
-                    }
-                    return label;
-                  }}
-                  filterOptions={(options, state) => {
-                    const filteredOptions = [];
-                    const { inputValue } = state;
-                    options.forEach((item) => {
-                      const query = `${item.name ?? ''}${item.phone ?? ''}${item.address ?? ''}`;
-                      if (query.toLowerCase().includes(state.inputValue.toLowerCase())) {
-                        filteredOptions.push(item);
-                      }
-                    });
-                    if (inputValue !== '' && filteredOptions.length === 0) {
-                      filteredOptions.push({
-                        id: 0,
-                        inputValue,
-                        name: `${t('ADD_BUTTON')} "${inputValue}"`,
-                      });
-                    }
-                    return filteredOptions;
-                  }}
-                  isOptionEqualToValue={(option, newValue) => {
-                    return option.id === newValue.id;
-                  }}
-                  options={[...customers]}
-                  value={value}
-                  onChange={(event, newValue) => {
-                    if (newValue.id === 0) {
-                      dispatch(
-                        openDialog({
-                          children: (
-                            <CreateUpdateCustomerDialog
-                              customer={{
-                                id: 0,
-                                address: '',
-                                name: newValue.inputValue,
-                                phone: '',
-                                isFamiliar: false,
-                              }}
-                              createCustomer={(data) => {
-                                dispatch(createCustomer(data)).then(() => {
-                                  dispatch(closeDialog());
-                                  setIsCustomersLoading(true);
-                                  dispatch(getCustomers()).then(() => {
-                                    setIsCustomersLoading(false);
-                                  });
-                                });
-                              }}
-                            />
-                          ),
-                        })
-                      );
-                    } else {
-                      setValue('customerDebt', newValue.debt);
-                      onChange(newValue);
-                    }
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      placeholder={t('SELECT_CUSTOMER_PLACE_HOLDER')}
-                      label={t('CUSTOMER_LABEL')}
-                      variant="outlined"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                          <>
-                            {isCustomersLoading ? (
-                              <CircularProgress color="inherit" size={20} />
-                            ) : null}
-                            {params.InputProps.endAdornment}
-                          </>
-                        ),
-                      }}
-                    />
-                  )}
-                />
-              )}
-            />
             <div className="flex flex-col sm:flex-row w-full items-center sm:space-x-16">
+              <Controller
+                name="customer"
+                control={control}
+                defaultValue={[]}
+                render={({ field: { onChange, value } }) => (
+                  <Autocomplete
+                    loading={isCustomersLoading}
+                    disabled={mode === constants.REVIEW_MODE}
+                    className="mt-8 mb-16"
+                    disablePortal
+                    fullWidth
+                    getOptionLabel={(item) => {
+                      let label = item.name;
+
+                      if (item.phone) {
+                        label += ` | ${item.phonePrefix}${item.phone}`;
+                      } else if (item.address) {
+                        label += ` | ${item.address}`;
+                      }
+                      label += ` | ${
+                        item.isFamiliar ? t('FAMILIAR_CUSTOMER') : t('PASSERSBY_CUSTOMER')
+                      }`;
+                      return label;
+                    }}
+                    filterOptions={(options, state) => {
+                      const filteredOptions = [];
+                      const { inputValue } = state;
+                      options.forEach((item) => {
+                        const query = `${item.name ?? ''}${item.phone ?? ''}${item.address ?? ''}`;
+                        if (query.toLowerCase().includes(state.inputValue.toLowerCase())) {
+                          filteredOptions.push(item);
+                        }
+                      });
+                      if (inputValue !== '' && filteredOptions.length === 0) {
+                        filteredOptions.push({
+                          id: 0,
+                          inputValue,
+                          name: `${t('ADD_BUTTON')} "${inputValue}"`,
+                        });
+                      }
+                      return filteredOptions;
+                    }}
+                    isOptionEqualToValue={(option, newValue) => {
+                      return option.id === newValue.id;
+                    }}
+                    options={[...customers]}
+                    value={value}
+                    onChange={(event, newValue) => {
+                      if (newValue.id === 0) {
+                        dispatch(
+                          openDialog({
+                            children: (
+                              <CreateUpdateCustomerDialog
+                                customer={{
+                                  id: 0,
+                                  address: '',
+                                  name: newValue.inputValue,
+                                  phone: '',
+                                  isFamiliar: false,
+                                }}
+                                createCustomer={(data) => {
+                                  dispatch(createCustomer(data)).then(() => {
+                                    dispatch(closeDialog());
+                                    setIsCustomersLoading(true);
+                                    dispatch(getCustomers()).then(() => {
+                                      setIsCustomersLoading(false);
+                                    });
+                                  });
+                                }}
+                              />
+                            ),
+                          })
+                        );
+                      } else {
+                        setValue('customerDebt', newValue.debt);
+                        onChange(newValue);
+                      }
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        placeholder={t('SELECT_CUSTOMER_PLACE_HOLDER')}
+                        label={t('CUSTOMER_LABEL')}
+                        variant="outlined"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {isCustomersLoading ? (
+                                <CircularProgress color="inherit" size={20} />
+                              ) : null}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                )}
+              />
+
               <Controller
                 name="customerDebt"
                 control={control}
@@ -232,30 +238,27 @@ const CreateUpdateInvoice = () => {
                   />
                 )}
               />
-              <Controller
-                name="totalCost"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    value={field.value.toLocaleString()}
-                    disabled
-                    className="mt-8 mb-16"
-                    label={t('TOTAL_COST_LABEL')}
-                    id="pricePerMass"
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">{shop.cashUnitName}</InputAdornment>
-                      ),
-                    }}
-                    variant="outlined"
-                    fullWidth
-                  />
-                )}
-              />
             </div>
 
-            <div className="flex flex-col sm:flex-row w-full items-center sm:space-x-16">
+            <div className="flex flex-col sm:flex-row w-full sm:space-x-16">
+              {mode !== constants.REVIEW_MODE && (
+                <Button
+                  className="whitespace-nowrap mt-8 mb-16 sm:w-1/4 w-full"
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    const totalCost = getValues('totalCost');
+
+                    const customerDebt = getValues('customerDebt');
+                    const value = totalCost;
+                    setValue('deposit', value);
+                    const rest = totalCost + customerDebt - value;
+                    setValue('rest', rest);
+                  }}
+                >
+                  {t('PAY_ALL_BUTTON')}
+                </Button>
+              )}
               <Controller
                 name="deposit"
                 control={control}
@@ -277,6 +280,27 @@ const CreateUpdateInvoice = () => {
                     }}
                     className="mt-8 mb-16"
                     label={t('DEPOSIT_LABEL')}
+                    id="pricePerMass"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">{shop.cashUnitName}</InputAdornment>
+                      ),
+                    }}
+                    variant="outlined"
+                    fullWidth
+                  />
+                )}
+              />
+              <Controller
+                name="totalCost"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    value={field.value.toLocaleString()}
+                    disabled
+                    className="mt-8 mb-16"
+                    label={t('TOTAL_COST_LABEL')}
                     id="pricePerMass"
                     InputProps={{
                       startAdornment: (

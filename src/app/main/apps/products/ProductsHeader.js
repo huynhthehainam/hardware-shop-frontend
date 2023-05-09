@@ -60,7 +60,7 @@ function ProductsHeader() {
             <Icon color="action">search</Icon>
 
             <Input
-              placeholder="Search"
+              placeholder={t('SEARCH_PLACEHOLDER')}
               className="flex flex-1 mx-8"
               disableUnderline
               fullWidth

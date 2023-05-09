@@ -39,6 +39,7 @@ const locale = {
   PRICING_TAB_LABEL: 'Giá',
   INVENTORY_TAB_LABEL: 'Tồn kho',
   NEW_PRODUCT_PLACEHOLDER: 'Sản phẩm mới',
+  SEARCH_PLACEHOLDER: 'Tìm kiếm',
 };
 
 export default locale;

@@ -230,7 +230,7 @@ function ProductsTable(props) {
         component="div"
         count={totalRecords}
         rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[5, 10, 20]}
+        rowsPerPageOptions={[10, 20, 50]}
         page={page}
         backIconButtonProps={{
           'aria-label': 'Previous Page',

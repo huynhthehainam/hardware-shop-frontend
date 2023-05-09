@@ -115,7 +115,7 @@ export default () => {
           <div className="flex flex-col min-w-0 mx-8 sm:mc-16">
             <motion.div initial={{ x: -20 }} animate={{ x: 0, transition: { delay: 0.3 } }}>
               <Typography className="text-16 sm:text-20 truncate font-semibold">
-                {customer ? customer.name : t('NEW_INVOICE_LABEL')}
+                {t('NEW_INVOICE_LABEL', { customerName: customer ? customer.name : '' })}
               </Typography>
               <Typography variant="caption" className="font-medium">
                 {t('INVOICE_DETAIL')}
