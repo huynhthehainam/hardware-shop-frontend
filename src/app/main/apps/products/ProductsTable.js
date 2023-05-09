@@ -51,7 +51,7 @@ function ProductsTable(props) {
 
   function handleSelectAllClick(event) {
     if (event.target.checked) {
-      setSelected(data.map((n) => n.id));
+      setSelected(data.map((n) => n));
       return;
     }
     setSelected([]);
@@ -65,12 +65,13 @@ function ProductsTable(props) {
     props.history.push(`/apps/product/${item.id}`);
   }
 
-  function handleCheck(event, id) {
-    const selectedIndex = selected.indexOf(id);
+  function handleCheck(event, product) {
+    const selectedIndex = selected.indexOf(product);
+    console.log('handle check', selectedIndex);
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
+      newSelected = newSelected.concat(selected, product);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -117,7 +118,7 @@ function ProductsTable(props) {
       <FuseScrollbars className="flex-grow overflow-x-auto">
         <Table stickyHeader className="min-w-xl" aria-labelledby="tableTitle">
           <ProductsTableHead
-            selectedProductIds={selected}
+            selectedProducts={selected}
             order={order}
             onSelectAllClick={handleSelectAllClick}
             onRequestSort={handleRequestSort}
@@ -127,7 +128,7 @@ function ProductsTable(props) {
 
           <TableBody>
             {data.map((n, index) => {
-              const isSelected = selected.indexOf(n.id) !== -1;
+              const isSelected = selected.indexOf(n) !== -1;
               return (
                 <TableRow
                   className="h-72 cursor-pointer"
@@ -143,7 +144,7 @@ function ProductsTable(props) {
                     <Checkbox
                       checked={isSelected}
                       onClick={(event) => event.stopPropagation()}
-                      onChange={(event) => handleCheck(event, n.id)}
+                      onChange={(event) => handleCheck(event, n)}
                     />
                   </TableCell>
 

@@ -12,7 +12,8 @@ import useNotification from '@fuse/hooks/useNotification';
 import { downloadInvoicePdf } from 'custom-axios/commonRequest';
 import { Button } from '@mui/material';
 import FuseUtils from '@fuse/utils/FuseUtils';
-import { openDialog } from 'app/store/fuse/dialogSlice';
+import { closeDialog, openDialog } from 'app/store/fuse/dialogSlice';
+import { AcceptanceDialog } from '../shared-components';
 import constants from './constants';
 import { createInvoice, restoreInvoiceById } from './store/createUpdateInvoiceSlice';
 import PreviewDialog from './dialogs/PreviewDialog';
@@ -77,11 +78,26 @@ export default () => {
   };
 
   function handleRestoreInvoice() {
-    const data = getValues();
-    setIsRestoreSubmitting(true);
-    dispatch(restoreInvoiceById(data.id)).then(() => {
-      setIsRestoreSubmitting(false);
-    });
+    dispatch(
+      openDialog({
+        maxWidth: 'xs',
+        fullWidth: true,
+        children: (
+          <AcceptanceDialog
+            title={t('RESTORE_INVOICE_TITLE')}
+            content={t('RESTORE_INVOICE_CONTENT')}
+            onAccept={() => {
+              const data = getValues();
+              setIsRestoreSubmitting(true);
+              dispatch(restoreInvoiceById(data.id)).then(() => {
+                setIsRestoreSubmitting(false);
+              });
+              dispatch(closeDialog());
+            }}
+          />
+        ),
+      })
+    );
   }
 
   const downloadPdf = () => {

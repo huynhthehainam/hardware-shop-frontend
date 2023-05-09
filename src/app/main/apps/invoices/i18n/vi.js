@@ -43,5 +43,8 @@ const locale = {
   FAMILIAR_CUSTOMER: 'Khách quen',
   PASSERSBY_CUSTOMER: 'Khách vãng lai',
   PAY_ALL_BUTTON: 'Trả đủ',
+  SEARCH_PLACEHOLDER: 'Tìm kiếm hoá đơn',
+  RESTORE_INVOICE_TITLE: 'Khôi phục đơn hàng',
+  RESTORE_INVOICE_CONTENT: 'Bạn chó chắc khôi phục đơn hàng này?',
 };
 export default locale;

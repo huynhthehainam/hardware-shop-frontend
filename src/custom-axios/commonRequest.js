@@ -49,14 +49,12 @@ export const getCustomerInvoicesById = (id) => {
 export const createCustomer = (data) => {
   return new Promise((resolve, reject) => {
     const { phone } = data;
-    console.log('phone nhu lz1', phone.length);
     if (!phone || phone.length === 0) {
-      console.log('phone nhu lz', phone);
       data.phone = null;
       data.phoneCountryId = null;
     }
     mainAxios.post(urlConfig.createCustomer, data).then((resp) => {
-      resolve();
+      resolve(resp.data.data);
     });
   });
 };
@@ -140,6 +138,18 @@ export const downloadCustomerInvoicesPdf = (id, lang) => {
         const blob = resp.data;
         const url = URL.createObjectURL(blob);
         resolve(url);
+      });
+  });
+};
+export const removeProductById = (id) => {
+  return new Promise((resolve) => {
+    mainAxios
+      .post(urlConfig.softlyRemoveProductById(id))
+      .then((resp) => {
+        resolve();
+      })
+      .catch((err) => {
+        resolve();
       });
   });
 };

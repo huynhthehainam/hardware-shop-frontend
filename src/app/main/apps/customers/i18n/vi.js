@@ -29,6 +29,7 @@ const locale = {
   SHOW_DEBT_HISTORY_TOOLTIP: 'Hiện lịch sử nợ',
   PAY_FULL_DEBT_TITLE: 'Xoá hết nợ cho {{name}}',
   ARE_YOU_SURE: 'Bạn có muốn xoá hết nợ cho {{name}}?',
+  REMOVE_BUTTON: 'Xoá',
   PAY_FULL_DEBT_TOOLTIP: 'Trả hết nợ',
   OK_BUTTON: 'Đồng ý',
   DOWNLOAD_BUTTON: 'Tải về',

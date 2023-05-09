@@ -61,27 +61,6 @@ export const getThumbnails = createAsyncThunk(
   }
 );
 
-export const removeProducts = createAsyncThunk(
-  'products/products/removeProducts',
-  (productIds, { dispatch, getState }) => {
-    return new Promise((resolve) => {
-      const promises = productIds.map((id) => {
-        return new Promise((removeProductResolve) => {
-          mainAxios
-            .post(urlConfig.softlyRemoveProductById(id))
-            .then(removeProductResolve(id))
-            .catch((e) => {
-              removeProductResolve(id);
-            });
-        });
-      });
-      Promise.all(promises).then((values) => {
-        resolve(values);
-      });
-    });
-  }
-);
-
 const productsSlice = createSlice({
   name: 'products',
   initialState: {

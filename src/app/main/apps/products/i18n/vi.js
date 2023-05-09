@@ -40,6 +40,8 @@ const locale = {
   INVENTORY_TAB_LABEL: 'Tồn kho',
   NEW_PRODUCT_PLACEHOLDER: 'Sản phẩm mới',
   SEARCH_PLACEHOLDER: 'Tìm kiếm',
+  REMOVE_PRODUCTS_DIALOG_TITLE: 'Bạn muốn xoá những sản phẩm này?',
+  REMOVE_PRODUCTS_CONTENT: 'Bạn muốn xoá sản phẩm {{products}}',
 };
 
 export default locale;

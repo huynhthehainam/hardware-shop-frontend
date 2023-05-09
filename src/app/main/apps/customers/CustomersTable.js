@@ -148,12 +148,9 @@ const CustomersTable = () => {
       <FuseScrollbars className="flex-grow overflow-x-auto">
         <Table stickyHeader className="min-w-xl" aria-labelledby="tableTitle">
           <CustomersTableHead
-            selectedProductIds={selected}
             order={order}
-            onSelectAllClick={handleSelectAllClick}
             onRequestSort={handleRequestSort}
             rowCount={data.length}
-            onMenuItemClick={handleDeselect}
           />
           <TableBody>
             {data.map((n, index) => {
@@ -172,14 +169,6 @@ const CustomersTable = () => {
                     handleClick(n);
                   }}
                 >
-                  <TableCell className="w-40 md:w-64 text-center" padding="none">
-                    <Checkbox
-                      checked={isSelected}
-                      onClick={(event) => event.stopPropagation()}
-                      onChange={(event) => handleCheck(event, n.id)}
-                    />
-                  </TableCell>
-
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="center">
                     {n.name}
                   </TableCell>

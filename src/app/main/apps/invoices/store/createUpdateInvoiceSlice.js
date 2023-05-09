@@ -12,6 +12,7 @@ export const getCustomers = createAsyncThunk(
       mainAxios.get(urlConfig.getCustomers).then((resp) => {
         const customers = resp.data.data;
         dispatch(setCustomers(customers));
+
         resolve();
       });
     });
@@ -37,18 +38,6 @@ export const getProducts = createAsyncThunk(
         Promise.all(promises).then((updatedProducts) => {
           dispatch(setProducts(updatedProducts));
         });
-      });
-    });
-  }
-);
-
-export const createCustomer = createAsyncThunk(
-  'invoices/createUpdateInvoice/createCustomer',
-  (data, { dispatch }) => {
-    if (data.phone && data.phone !== '') data.phone = `+84${data.phone}`;
-    return new Promise((resolve, reject) => {
-      mainAxios.post(urlConfig.createCustomer, data).then((resp) => {
-        resolve();
       });
     });
   }

@@ -22,10 +22,10 @@ import {
   TextField,
 } from '@mui/material';
 import { closeDialog, openDialog } from 'app/store/fuse/dialogSlice';
+import { createCustomer } from 'custom-axios/commonRequest';
 import reducer from './store';
 import constants from './constants';
 import {
-  createCustomer,
   getCustomers,
   getInvoiceById,
   getProducts,
@@ -116,7 +116,6 @@ const CreateUpdateInvoice = () => {
               <Controller
                 name="customer"
                 control={control}
-                defaultValue={[]}
                 render={({ field: { onChange, value } }) => (
                   <Autocomplete
                     loading={isCustomersLoading}
@@ -125,19 +124,22 @@ const CreateUpdateInvoice = () => {
                     disablePortal
                     fullWidth
                     getOptionLabel={(item) => {
-                      let label = item.name;
-
-                      if (item.phone) {
-                        label += ` | ${item.phonePrefix}${item.phone}`;
-                      } else if (item.address) {
-                        label += ` | ${item.address}`;
+                      if (item.id > 0) {
+                        let label = item.name;
+                        if (item.phone) {
+                          label += ` | ${item.phonePrefix}${item.phone}`;
+                        } else if (item.address) {
+                          label += ` | ${item.address}`;
+                        }
+                        label += ` | ${
+                          item.isFamiliar ? t('FAMILIAR_CUSTOMER') : t('PASSERSBY_CUSTOMER')
+                        }`;
+                        return label;
                       }
-                      label += ` | ${
-                        item.isFamiliar ? t('FAMILIAR_CUSTOMER') : t('PASSERSBY_CUSTOMER')
-                      }`;
-                      return label;
+                      return item.name;
                     }}
                     filterOptions={(options, state) => {
+                      console.log('state', state);
                       const filteredOptions = [];
                       const { inputValue } = state;
                       options.forEach((item) => {
@@ -174,7 +176,7 @@ const CreateUpdateInvoice = () => {
                                   isFamiliar: false,
                                 }}
                                 createCustomer={(data) => {
-                                  dispatch(createCustomer(data)).then(() => {
+                                  createCustomer(data).then((createdData) => {
                                     dispatch(closeDialog());
                                     setIsCustomersLoading(true);
                                     dispatch(getCustomers()).then(() => {
