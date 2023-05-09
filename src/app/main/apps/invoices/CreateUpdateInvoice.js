@@ -389,6 +389,7 @@ const CreateUpdateInvoice = () => {
                             )}`,
                             totalCost: 0.0,
                           });
+                          setSelectedProduct(null);
                         }
                       }
                     }}
