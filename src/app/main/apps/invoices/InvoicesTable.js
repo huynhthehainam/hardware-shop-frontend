@@ -54,7 +54,6 @@ const InvoicesTable = () => {
     dispatch(getInvoices());
   }
   const shop = useSelector(({ auth }) => auth.user.shop);
-  console.log('data', data);
   useEffect(() => {
     dispatch(getInvoices()).then(() => {
       setLoading(false);

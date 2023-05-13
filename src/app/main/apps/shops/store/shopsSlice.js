@@ -1,3 +1,5 @@
+import { getShopsList } from 'custom-axios/commonRequest';
+
 const { createSlice, createAsyncThunk } = require('@reduxjs/toolkit');
 
 const initialState = {
@@ -16,7 +18,20 @@ export const getShops = createAsyncThunk(
   'shops/shops/getShops',
   (params, { dispatch, getState }) => {
     return new Promise((resolve, reject) => {
-      resolve();
+      const { page } = getState().shops.shops;
+      const { rowsPerPage } = getState().shops.shops;
+      const pageSize = getState().shops.shops.rowsPerPage;
+      const search = getState().shops.shops.searchText;
+
+      getShopsList({
+        page,
+        pageSize,
+        search,
+      }).then((data) => {
+        dispatch(setTotalRecords(data.totalItems));
+        dispatch(setShops(data.data));
+        resolve();
+      });
     });
   }
 );

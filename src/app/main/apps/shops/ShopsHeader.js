@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectMainTheme } from 'app/store/fuse/settingsSlice';
 import { useDebounce } from '@fuse/hooks';
 import { useTranslation } from 'react-i18next';
+import { Button } from '@mui/material';
 import { getShops, setPage, setSearchText } from './store/shopsSlice';
 
 function ShopsHeader() {
@@ -41,7 +42,7 @@ function ShopsHeader() {
           delay={300}
           className="hidden sm:flex text-16 md:text-24 mx-12 font-semibold"
         >
-          {t('PRODUCTS_HEADER')}
+          {t('SHOPS_HEADER')}
         </Typography>
       </div>
 
@@ -56,7 +57,7 @@ function ShopsHeader() {
             <Icon color="action">search</Icon>
 
             <Input
-              placeholder="Search"
+              placeholder={t('SEARCH_PLACEHOLDER')}
               className="flex flex-1 mx-8"
               disableUnderline
               fullWidth
@@ -69,6 +70,22 @@ function ShopsHeader() {
           </Paper>
         </ThemeProvider>
       </div>
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}
+      >
+        <Button
+          className="whitespace-nowrap mx-4"
+          variant="contained"
+          color="secondary"
+          onClick={() => {
+            console.log('create shop');
+          }}
+          startIcon={<Icon className="hidden sm:flex">add</Icon>}
+        >
+          {t('CREATE_SHOP_BUTTON')}
+        </Button>
+      </motion.div>
     </div>
   );
 }

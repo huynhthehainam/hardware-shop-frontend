@@ -3,6 +3,7 @@ import withReducer from 'app/store/withReducer';
 import { styled } from '@mui/material/styles';
 import reducer from './store';
 import ShopsHeader from './ShopsHeader';
+import ShopsTable from './ShopsTable';
 
 const Root = styled(FusePageCarded)(({ theme }) => ({
   '& .FusePageCarded-header': {
@@ -23,7 +24,7 @@ const Root = styled(FusePageCarded)(({ theme }) => ({
 }));
 
 function Shops() {
-  return <Root header={<ShopsHeader />} innerScroll />;
+  return <Root header={<ShopsHeader />} content={<ShopsTable />} innerScroll />;
 }
 
 export default withReducer('shops', reducer)(Shops);

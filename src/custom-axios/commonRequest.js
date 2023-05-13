@@ -46,6 +46,14 @@ export const getCustomerInvoicesById = (id) => {
     });
   });
 };
+
+export const getShopsList = (params) => {
+  return new Promise((resolve) => {
+    mainAxios.get(urlConfig.getShops, { params }).then((resp) => {
+      resolve(resp.data);
+    });
+  });
+};
 export const createCustomer = (data) => {
   return new Promise((resolve, reject) => {
     const { phone } = data;
