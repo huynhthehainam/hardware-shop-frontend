@@ -17,6 +17,7 @@ import { AcceptanceDialog } from '../shared-components';
 import constants from './constants';
 import { createInvoice, restoreInvoiceById } from './store/createUpdateInvoiceSlice';
 import PreviewDialog from './dialogs/PreviewDialog';
+import DownloadOptionsDialog from './dialogs/DownloadOptionsDialog';
 
 export default () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,6 +30,8 @@ export default () => {
   const customer = watch('customer');
   const theme = useTheme();
   const history = useHistory();
+  const shop = useSelector(({ auth }) => auth.user.shop);
+
   const mode = useSelector(({ invoices }) => invoices.createUpdateInvoice.mode);
   const { showNotification } = useNotification();
   const lang = useSelector(({ i18n }) => i18n.language);
@@ -102,9 +105,24 @@ export default () => {
 
   const downloadPdf = () => {
     const data = getValues();
-    downloadInvoicePdf(data.id, lang).then((url) => {
-      FuseUtils.downloadUrl(url);
-    });
+    console.log('shop', shop);
+    if (shop.isAllowedToShowInvoiceDownloadOptions) {
+      dispatch(
+        openDialog({
+          maxWidth: 'xs',
+          fullWidth: true,
+          children: <DownloadOptionsDialog invoice={data} />,
+        })
+      );
+    } else {
+      downloadInvoicePdf(data.id, lang, {
+        isAllowedToShowCustomerInformation: true,
+        isAllowedToShowCustomerDeposit: true,
+        isAllowedToShowShopInformation: true,
+      }).then((url) => {
+        FuseUtils.downloadUrl(url);
+      });
+    }
   };
   return (
     <div className="flex flex-1 w-full items-center justify-between">

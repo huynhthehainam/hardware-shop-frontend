@@ -46,5 +46,10 @@ const locale = {
   SEARCH_PLACEHOLDER: 'Tìm kiếm hoá đơn',
   RESTORE_INVOICE_TITLE: 'Khôi phục đơn hàng',
   RESTORE_INVOICE_CONTENT: 'Bạn chó chắc khôi phục đơn hàng này?',
+  DOWNLOAD_OPTIONS_TITLE: 'Tải hoá đơn {{customerName}}',
+  SHOW_CUSTOMER_INFORMATION_DESC: 'Hiện thông tin khách hàng',
+  SHOW_CUSTOMER_DEPOSIT_DESC: 'Hiện thông tin trả trước',
+  SHOW_SHOP_INFORMATION_DESC: 'Hiện thông tin cửa hàng',
+  OK_BUTTON: 'Đồng ý',
 };
 export default locale;

@@ -121,11 +121,14 @@ export const payAllDebt = (id) => {
     });
   });
 };
-export const downloadInvoicePdf = (id, lang) => {
+export const downloadInvoicePdf = (id, lang, options) => {
   return new Promise((resolve, reject) => {
     const apiLanguage = FuseUtils.generateApiLanguage(lang);
     mainAxios
-      .get(urlConfig.getInvoicePdfById(id), { responseType: 'blob', params: { lang: apiLanguage } })
+      .get(urlConfig.getInvoicePdfById(id), {
+        responseType: 'blob',
+        params: { lang: apiLanguage, ...options },
+      })
       .then((resp) => {
         const blob = resp.data;
         const url = URL.createObjectURL(blob);
