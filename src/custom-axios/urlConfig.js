@@ -41,6 +41,7 @@ const urlConfig = {
   getCustomerInvoicesPdfById: (id) => `/api/customers/${id}/allInvoicesPdf`,
   getAllDebtsPdf: '/api/customers/allDebtsPdf',
   getShops: '/api/shops',
+  createProductCategory: '/api/productCategories',
 };
 
 export default urlConfig;

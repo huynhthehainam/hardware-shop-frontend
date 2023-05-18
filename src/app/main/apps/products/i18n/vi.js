@@ -42,6 +42,7 @@ const locale = {
   SEARCH_PLACEHOLDER: 'Tìm kiếm',
   REMOVE_PRODUCTS_DIALOG_TITLE: 'Bạn muốn xoá những sản phẩm này?',
   REMOVE_PRODUCTS_CONTENT: 'Bạn muốn xoá sản phẩm {{products}}',
+  ADD_BUTTON: 'Thêm',
 };
 
 export default locale;

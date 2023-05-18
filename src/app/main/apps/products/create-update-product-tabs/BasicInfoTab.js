@@ -4,12 +4,14 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Box } from '@mui/system';
+import { openDialog } from 'app/store/fuse/dialogSlice';
 import {
   getCategories,
   getUnitCategories,
   getUnits,
   setUnitCategoryId,
 } from '../store/newUpdateProductSlice';
+import { CreateUpdateProductCategoryDialog } from '../../shared-components';
 
 const {
   TextField,
@@ -163,10 +165,59 @@ function BasicInfoTab() {
             isOptionEqualToValue={(option, newValue) => {
               return option.id === newValue.id;
             }}
+            filterOptions={(options, state) => {
+              const filteredOptions = [];
+              const { inputValue } = state;
+              options.forEach((item) => {
+                if (item.name.toLowerCase().includes(inputValue.toLowerCase())) {
+                  filteredOptions.push(item);
+                }
+              });
+              if (inputValue !== '' && filteredOptions.length === 0) {
+                filteredOptions.push({
+                  id: 0,
+                  inputValue,
+                  name: `${t('ADD_BUTTON')} "${inputValue}"`,
+                });
+              }
+              return filteredOptions;
+            }}
             options={[...categories]}
             value={value}
-            onChange={(event, newValue) => {
-              onChange(newValue);
+            onChange={(event, newValues) => {
+              const validatedValues = [];
+              newValues.forEach((item) => {
+                if (item.id > 0) {
+                  validatedValues.push(item);
+                }
+              });
+              onChange(validatedValues);
+
+              if (newValues.length > 0) {
+                const lastValue = newValues[newValues.length - 1];
+                console.log('lastValue', lastValue);
+                if (lastValue.id === 0) {
+                  dispatch(
+                    openDialog({
+                      children: (
+                        <CreateUpdateProductCategoryDialog
+                          category={{
+                            id: 0,
+                            description: '',
+                            name: lastValue.inputValue,
+                          }}
+                          onCreated={() => {
+                            setIsProductCategoriesLoading(true);
+                            dispatch(getCategories()).then(() => {
+                              setIsProductCategoriesLoading(false);
+                            });
+                          }}
+                        />
+                      ),
+                    })
+                  );
+                }
+              }
             }}
             renderInput={(params) => (
               <TextField

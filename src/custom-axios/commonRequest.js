@@ -114,6 +114,14 @@ export const addPricePerMass = (data) => {
   });
 };
 
+export const createProductCategory = (data) => {
+  return new Promise((resolve) => {
+    mainAxios.post(urlConfig.createProductCategory, data).then((resp) => {
+      resolve();
+    });
+  });
+};
+
 export const payAllDebt = (id) => {
   return new Promise((resolve, reject) => {
     mainAxios.post(urlConfig.payAllDebtById(id)).then((resp) => {
