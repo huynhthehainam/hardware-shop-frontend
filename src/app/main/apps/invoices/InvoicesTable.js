@@ -146,18 +146,16 @@ const InvoicesTable = () => {
                   <TableCell className="p-4 md:p-16" component="th" scope="row">
                     {n.customerName}
                   </TableCell>
-
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="left">
                     {`${n.customerPhonePrefix ?? ''}${n.customerPhone ?? ''}`}
                   </TableCell>
-
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="left">
                     {n.customerAddress}
                   </TableCell>
-                  <TableCell className="p-4 md:p-16" component="th" scope="row" align="left">
+                  <TableCell className="p-4 md:p-16" component="th" scope="row" align="center">
                     {n.code}
                   </TableCell>
-                  <TableCell className="p-4 md:p-16" component="th" scope="row" align="left">
+                  <TableCell className="p-4 md:p-16" component="th" scope="row" align="center">
                     {createdDate}
                   </TableCell>
                   <TableCell className="p-4 md:p-16" component="th" scope="row" align="right">

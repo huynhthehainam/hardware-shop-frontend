@@ -397,26 +397,23 @@ const CreateUpdateInvoice = () => {
                     color="primary"
                     onClick={() => {
                       if (selectedProduct) {
-                        console.log('select', selectedProduct);
-                        if (!_.find(fields, (e) => e.productId === selectedProduct.id)) {
-                          console.log('selected product', selectedProduct);
-                          append({
-                            productId: selectedProduct.id,
-                            inventoryNumber: selectedProduct.inventoryNumber,
-                            description: '',
-                            quantity: 0,
-                            originalPrice: selectedProduct.originalPrice ?? 0,
-                            price:
-                              customer.isFamiliar && selectedProduct.priceForFamiliarCustomer
-                                ? selectedProduct.priceForFamiliarCustomer
-                                : selectedProduct.priceForCustomer,
-                            productName: `${selectedProduct.name} | ${unitT(
-                              selectedProduct.unitName.toUpperCase()
-                            )}`,
-                            totalCost: 0.0,
-                          });
-                          setSelectedProduct(null);
-                        }
+                        console.log('selected product', selectedProduct);
+                        append({
+                          productId: selectedProduct.id,
+                          inventoryNumber: selectedProduct.inventoryNumber,
+                          description: '',
+                          quantity: 0,
+                          originalPrice: selectedProduct.originalPrice ?? 0,
+                          price:
+                            customer.isFamiliar && selectedProduct.priceForFamiliarCustomer
+                              ? selectedProduct.priceForFamiliarCustomer
+                              : selectedProduct.priceForCustomer,
+                          productName: `${selectedProduct.name} | ${unitT(
+                            selectedProduct.unitName.toUpperCase()
+                          )}`,
+                          totalCost: 0.0,
+                        });
+                        setSelectedProduct(null);
                       }
                     }}
                     startIcon={<Icon className="hidden sm:flex">add</Icon>}

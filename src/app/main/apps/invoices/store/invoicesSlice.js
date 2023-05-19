@@ -32,7 +32,7 @@ const initialState = {
   searchText: '',
   data: [],
   order: {
-    id: 'code',
+    id: 'createdDate',
     direction: 'asc',
   },
   totalRecords: 0,
