@@ -48,8 +48,8 @@ export default (props) => {
   const { t } = useTranslation('invoices');
   const shop = useSelector(({ auth }) => auth.user.shop);
 
-  const { control, watch } = formContext;
-  const invoice = watch();
+  const { control, watch, getValues } = formContext;
+  const invoice = getValues();
   const dispatch = useDispatch();
   console.log('invoice', invoice);
   return (
