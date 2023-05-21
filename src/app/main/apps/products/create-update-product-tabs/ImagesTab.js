@@ -83,10 +83,13 @@ const ImagesTab = () => {
                   multiple="multiple"
                   onChange={(e) => {
                     const { files } = e.target;
+                    console.log('files', files);
                     Object.keys(files).forEach((i) => {
                       const file = files[i];
                       file.myId = FuseUtils.generateGUID();
                     });
+                    console.log('files2', files);
+
                     const promises = Object.keys(files).map((i) => {
                       return new Promise((resolve) => {
                         const file = files[i];
@@ -103,12 +106,15 @@ const ImagesTab = () => {
                               newImage.id = resp.payload.id;
                               resolve(newImage);
                             });
+                          } else {
+                            resolve(newImage);
                           }
                         };
                         reader.readAsBinaryString(file);
                       });
                     });
                     Promise.all(promises).then((values) => {
+                      console.log('promise', values);
                       setValue('imageUrls', [...getValues('imageUrls'), ...values]);
                     });
 
