@@ -33,7 +33,7 @@ const initialState = {
   data: [],
   order: {
     id: 'createdDate',
-    direction: 'asc',
+    direction: 'des',
   },
   totalRecords: 0,
   rowsPerPage: 5,

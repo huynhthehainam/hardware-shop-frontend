@@ -17,9 +17,9 @@ import {
   Box,
   Button,
   CircularProgress,
-  Icon,
   InputAdornment,
   TextField,
+  Typography,
 } from '@mui/material';
 import { closeDialog, openDialog } from 'app/store/fuse/dialogSlice';
 import { createCustomer } from 'custom-axios/commonRequest';
@@ -96,7 +96,25 @@ const CreateUpdateInvoice = () => {
       setIsProductsLoading(false);
     });
   }, [dispatch]);
-
+  const addDetailRow = (product, isFamiliar) => {
+    if (product) {
+      console.log('selected product', product);
+      append({
+        productId: product.id,
+        inventoryNumber: product.inventoryNumber,
+        description: '',
+        quantity: 0,
+        originalPrice: product.originalPrice ?? 0,
+        price:
+          isFamiliar && product.priceForFamiliarCustomer
+            ? product.priceForFamiliarCustomer
+            : product.priceForCustomer,
+        productName: `${product.name} | ${unitT(product.unitName.toUpperCase())}`,
+        totalCost: 0.0,
+      });
+      setSelectedProduct(null);
+    }
+  };
   const form = watch();
   const customer = watch('customer');
   const handleRemoveRow = (index) => {
@@ -392,33 +410,38 @@ const CreateUpdateInvoice = () => {
                 />
                 {mode !== constants.REVIEW_MODE && (
                   <Button
-                    className="whitespace-nowrap mx-8 mt-8 mb-16"
+                    className="ml-8 mt-8 mb-16 flex flex-col"
                     variant="contained"
                     color="primary"
                     onClick={() => {
-                      if (selectedProduct) {
-                        console.log('selected product', selectedProduct);
-                        append({
-                          productId: selectedProduct.id,
-                          inventoryNumber: selectedProduct.inventoryNumber,
-                          description: '',
-                          quantity: 0,
-                          originalPrice: selectedProduct.originalPrice ?? 0,
-                          price:
-                            customer.isFamiliar && selectedProduct.priceForFamiliarCustomer
-                              ? selectedProduct.priceForFamiliarCustomer
-                              : selectedProduct.priceForCustomer,
-                          productName: `${selectedProduct.name} | ${unitT(
-                            selectedProduct.unitName.toUpperCase()
-                          )}`,
-                          totalCost: 0.0,
-                        });
-                        setSelectedProduct(null);
-                      }
+                      addDetailRow(selectedProduct, true);
                     }}
-                    startIcon={<Icon className="hidden sm:flex">add</Icon>}
                   >
-                    {t('ADD_BUTTON')}
+                    <Typography>{t('ADD_FAMILIAR_CUSTOMER_PRICE_BUTTON')}</Typography>
+                    <Typography>
+                      {shop.cashUnitName}{' '}
+                      {selectedProduct && selectedProduct.priceForFamiliarCustomer
+                        ? selectedProduct.priceForFamiliarCustomer.toLocaleString()
+                        : 0}
+                    </Typography>
+                  </Button>
+                )}
+                {mode !== constants.REVIEW_MODE && (
+                  <Button
+                    className="ml-8 mt-8 mb-16 flex flex-col"
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      addDetailRow(selectedProduct, false);
+                    }}
+                  >
+                    <Typography>{t('ADD_CUSTOMER_PRICE_BUTTON')}</Typography>
+                    <Typography>
+                      {shop.cashUnitName}{' '}
+                      {selectedProduct && selectedProduct.priceForCustomer
+                        ? selectedProduct.priceForCustomer.toLocaleString()
+                        : 0}
+                    </Typography>
                   </Button>
                 )}
               </div>

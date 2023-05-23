@@ -40,8 +40,8 @@ const locale = {
   NO_INVOICE_MESSAGE: 'Không có hoá đơn',
   PREVIEW_BUTTON: 'Xem trước',
   PREVIEW_INVOICE_TITLE: 'Hoá đơn khách hàng {{customerName}}',
-  FAMILIAR_CUSTOMER: 'Khách quen',
-  PASSERSBY_CUSTOMER: 'Khách vãng lai',
+  FAMILIAR_CUSTOMER: 'Thợ',
+  PASSERSBY_CUSTOMER: 'Khách',
   PAY_ALL_BUTTON: 'Trả đủ',
   SEARCH_PLACEHOLDER: 'Tìm kiếm hoá đơn',
   RESTORE_INVOICE_TITLE: 'Khôi phục đơn hàng',
@@ -51,5 +51,7 @@ const locale = {
   SHOW_CUSTOMER_DEPOSIT_DESC: 'Hiện thông tin trả trước',
   SHOW_SHOP_INFORMATION_DESC: 'Hiện thông tin cửa hàng',
   OK_BUTTON: 'Đồng ý',
+  ADD_FAMILIAR_CUSTOMER_PRICE_BUTTON: 'Thêm giá thợ',
+  ADD_CUSTOMER_PRICE_BUTTON: 'Thêm giá khách',
 };
 export default locale;
