@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import mainAxios, { urlConfig } from 'custom-axios';
+import { downloadAssetById } from 'custom-axios/commonRequest';
 
 export const getProducts = createAsyncThunk(
   'products/products/getProducts',
@@ -35,26 +36,28 @@ export const getThumbnails = createAsyncThunk(
   (params, { dispatch, getState }) => {
     return new Promise((resolve, reject) => {
       const { products } = getState().products.products;
-      const promises = products.map(
-        (item, index) =>
+      const assetIds = products
+        .map((p) => p.thumbnailAssetId)
+        .filter((value, index, array) => array.indexOf(value) === index);
+
+      const promises = assetIds.map(
+        (assetId) =>
           new Promise((thumbnailResolve) => {
-            const newItem = { ...item };
-            const url = urlConfig.getProductThumbnailById(item.id);
-            mainAxios
-              .get(url, { responseType: 'blob' })
-              .then((response) => {
-                const { data } = response;
-                const blobUrl = URL.createObjectURL(data);
-                newItem.image = blobUrl;
-                thumbnailResolve(newItem);
-              })
-              .catch((err) => {
-                thumbnailResolve(newItem);
+            downloadAssetById(assetId).then((url) => {
+              thumbnailResolve({
+                assetId,
+                url,
               });
+            });
           })
       );
-      Promise.all(promises).then((values) => {
-        dispatch(setProducts(values));
+      Promise.all(promises).then((assets) => {
+        const updatedProducts = products.map((p) => {
+          const newProduct = { ...p };
+          newProduct.image = assets.find((e) => e.assetId === newProduct.thumbnailAssetId).url;
+          return newProduct;
+        });
+        dispatch(setProducts(updatedProducts));
         resolve();
       });
     });

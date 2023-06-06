@@ -83,10 +83,26 @@ export const getAllProducts = () => {
     });
   });
 };
+
 export const downloadProductThumbnailById = (id) => {
   return new Promise((resolve) => {
     mainAxios
       .get(urlConfig.getProductThumbnailById(id), { responseType: 'blob' })
+      .then((resp) => {
+        const blob = resp.data;
+        const url = URL.createObjectURL(blob);
+        resolve(url);
+      })
+      .catch(() => {
+        resolve(null);
+      });
+  });
+};
+
+export const downloadAssetById = (id) => {
+  return new Promise((resolve) => {
+    mainAxios
+      .get(urlConfig.getAssetById(id), { responseType: 'blob' })
       .then((resp) => {
         const blob = resp.data;
         const url = URL.createObjectURL(blob);

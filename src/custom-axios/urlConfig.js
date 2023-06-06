@@ -14,6 +14,7 @@ const urlConfig = {
     `/api/products/${productId}/assets/${assetId}`,
   getProductDetailById: (id) => `/api/products/${id}`,
   getProductThumbnailById: (id) => `/api/products/${id}/thumbnail`,
+  getAssetById: (id) => `/api/assets/${id}`,
   selectProductThumbnailById: (id) => `/api/products/${id}/selectThumbnail`,
   updateProductById: (id) => `/api/products/${id}/update`,
   getCustomers: '/api/customers',

@@ -1,6 +1,6 @@
 import mainAxios, { urlConfig } from 'custom-axios';
 
-import { downloadProductThumbnailById, getAllProducts } from 'custom-axios/commonRequest';
+import { downloadAssetById, getAllProducts } from 'custom-axios/commonRequest';
 import constants from '../constants';
 
 const { createSlice, createAsyncThunk } = require('@reduxjs/toolkit');
@@ -26,16 +26,28 @@ export const getProducts = createAsyncThunk(
       getAllProducts().then((products) => {
         dispatch(setProducts(products));
         resolve();
-        const promises = products.map((p) => {
+        const assetIds = products
+          .map((p) => p.thumbnailAssetId)
+          .filter((value, index, array) => array.indexOf(value) === index);
+
+        const promises = assetIds.map((assetId) => {
           return new Promise((downloadResolve) => {
-            downloadProductThumbnailById(p.id).then((url) => {
-              const newProduct = { ...p };
-              newProduct.thumbnail = url;
-              downloadResolve(newProduct);
+            downloadAssetById(assetId).then((url) => {
+              downloadResolve({
+                assetId,
+                url,
+              });
             });
           });
         });
-        Promise.all(promises).then((updatedProducts) => {
+        Promise.all(promises).then((assets) => {
+          const updatedProducts = products.map((p) => {
+            const newProduct = { ...p };
+            newProduct.thumbnail = assets.find(
+              (e) => e.assetId === newProduct.thumbnailAssetId
+            ).url;
+            return newProduct;
+          });
           dispatch(setProducts(updatedProducts));
         });
       });
