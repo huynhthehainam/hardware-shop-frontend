@@ -11,7 +11,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import InputBase from '@mui/material/InputBase';
 import { sendMessage } from './store/chatSlice';
-import { selectContacts } from './store/contactsSlice';
 
 const StyledMessageRow = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -133,7 +132,7 @@ const StyledMessageRow = styled('div')(({ theme }) => ({
 
 function Chat(props) {
   const dispatch = useDispatch();
-  const contacts = useSelector(selectContacts);
+  const contacts = useSelector(({ chatPanel }) => chatPanel.contacts.contacts);
   const selectedContactId = useSelector(({ chatPanel }) => chatPanel.contacts.selectedContactId);
   const chat = useSelector(({ chatPanel }) => chatPanel.chat);
   const user = useSelector(({ chatPanel }) => chatPanel.user);

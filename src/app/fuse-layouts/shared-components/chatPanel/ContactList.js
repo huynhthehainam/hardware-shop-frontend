@@ -1,11 +1,9 @@
 import FuseScrollbars from '@fuse/core/FuseScrollbars';
 import { styled } from '@mui/material/styles';
-import Divider from '@mui/material/Divider';
 import { motion } from 'framer-motion';
 import { memo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getChat } from './store/chatSlice';
-import { selectContacts } from './store/contactsSlice';
 import { openChatPanel } from './store/stateSlice';
 import ContactButton from './ContactButton';
 
@@ -15,10 +13,8 @@ const Root = styled(FuseScrollbars)(({ theme }) => ({
 
 function ContactList(props) {
   const dispatch = useDispatch();
-  const contacts = useSelector(selectContacts);
+  const contacts = useSelector(({ chatPanel }) => chatPanel.contacts.contacts);
   const selectedContactId = useSelector(({ chatPanel }) => chatPanel.contacts.selectedContactId);
-  const user = useSelector(({ chatPanel }) => chatPanel.user);
-
   const contactListScroll = useRef(null);
 
   const handleContactClick = (contactId) => {
@@ -58,24 +54,8 @@ function ContactList(props) {
             animate="show"
             className="flex flex-col flex-shrink-0"
           >
-            {user &&
-              user.chatList &&
-              user.chatList.map((chat) => {
-                const contact = contacts.find((_contact) => _contact.id === chat.contactId);
-                return (
-                  <motion.div variants={item} key={contact.id}>
-                    <ContactButton
-                      contact={contact}
-                      selectedContactId={selectedContactId}
-                      onClick={handleContactClick}
-                    />
-                  </motion.div>
-                );
-              })}
-            <Divider className="mx-24 my-8" />
             {contacts.map((contact) => {
-              const chatContact = user.chatList.find((_chat) => _chat.contactId === contact.id);
-              return !chatContact ? (
+              return (
                 <motion.div variants={item} key={contact.id}>
                   <ContactButton
                     contact={contact}
@@ -83,8 +63,6 @@ function ContactList(props) {
                     onClick={handleContactClick}
                   />
                 </motion.div>
-              ) : (
-                ''
               );
             })}
           </motion.div>

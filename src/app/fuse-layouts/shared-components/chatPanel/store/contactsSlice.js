@@ -1,25 +1,13 @@
-import { createEntityAdapter, createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
-import axios from 'axios';
 import { closeChatPanel } from './stateSlice';
-
-export const getContacts = createAsyncThunk('chatPanel/contacts/getContacts', async (params) => {
-  const response = await axios.get('/api/chat/contacts', { params });
-  const data = await response.data;
-
-  return data;
-});
-
-const contactsAdapter = createEntityAdapter({});
-
-export const { selectAll: selectContacts, selectById: selectContactById } =
-  contactsAdapter.getSelectors((state) => state.chatPanel.contacts);
 
 const contactsSlice = createSlice({
   name: 'chatPanel/contacts',
-  initialState: contactsAdapter.getInitialState({
-    selectedContactId: null,
-  }),
+  initialState: {
+    contacts: [],
+    selectContactById: null,
+  },
   reducers: {
     setSelectedContactId: (state, action) => {
       state.selectedContactId = action.payload;
@@ -27,15 +15,18 @@ const contactsSlice = createSlice({
     removeSelectedContactId: (state, action) => {
       state.selectedContactId = null;
     },
+    initContacts: (state, action) => {
+      state.contacts = action.payload;
+    },
   },
   extraReducers: {
-    [getContacts.fulfilled]: contactsAdapter.setAll,
     [closeChatPanel]: (state, action) => {
       state.selectedContactId = null;
     },
   },
 });
 
-export const { setSelectedContactId, removeSelectedContactId } = contactsSlice.actions;
+export const { setSelectedContactId, removeSelectedContactId, initContacts } =
+  contactsSlice.actions;
 
 export default contactsSlice.reducer;

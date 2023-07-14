@@ -14,9 +14,7 @@ import { useSwipeable } from 'react-swipeable';
 import Chat from './Chat';
 import ContactList from './ContactList';
 import reducer from './store';
-import { getContacts, selectContacts } from './store/contactsSlice';
 import { openChatPanel, closeChatPanel } from './store/stateSlice';
-import { getUserData } from './store/userSlice';
 
 const Root = styled('div')(({ theme, opened }) => ({
   position: 'sticky',
@@ -99,7 +97,7 @@ const Root = styled('div')(({ theme, opened }) => ({
 
 function ChatPanel(props) {
   const dispatch = useDispatch();
-  const contacts = useSelector(selectContacts);
+  const contacts = useSelector(({ chatPanel }) => chatPanel.contacts.contacts);
   const selectedContactId = useSelector(({ chatPanel }) => chatPanel.contacts.selectedContactId);
   const state = useSelector(({ chatPanel }) => chatPanel.state);
   const theme = useTheme();
@@ -126,8 +124,6 @@ function ChatPanel(props) {
   );
 
   useEffect(() => {
-    dispatch(getUserData());
-    dispatch(getContacts());
     return () => {
       document.removeEventListener('keydown', handleDocumentKeyDown);
     };

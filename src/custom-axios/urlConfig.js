@@ -43,6 +43,7 @@ const urlConfig = {
   getAllDebtsPdf: '/api/customers/allDebtsPdf',
   getShops: '/api/shops',
   createProductCategory: '/api/productCategories',
+  chatHub: '/chatHub',
 };
 
 export default urlConfig;
