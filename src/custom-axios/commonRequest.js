@@ -113,6 +113,23 @@ export const downloadAssetById = (id) => {
       });
   });
 };
+export const downloadAssetsByIds = (ids) => {
+  return new Promise((totalDownloadResolve) => {
+    const promises = ids.map((id) => {
+      return new Promise((downloadResolve) => {
+        downloadAssetById(id).then((url) => {
+          downloadResolve({
+            assetId: id,
+            url,
+          });
+        });
+      });
+    });
+    Promise.all(promises).then((values) => {
+      totalDownloadResolve(values);
+    });
+  });
+};
 
 export const getAllCategories = () => {
   return new Promise((resolve, reject) => {

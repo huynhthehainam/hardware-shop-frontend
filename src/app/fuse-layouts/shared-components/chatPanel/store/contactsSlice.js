@@ -18,6 +18,26 @@ const contactsSlice = createSlice({
     initContacts: (state, action) => {
       state.contacts = action.payload;
     },
+    markAsReadBySessionId: (state, action) => {
+      const sessionId = action.payload;
+      const newContacts = state.contacts.map((c) => {
+        return {
+          ...c,
+          unread: c.id === sessionId ? 0 : c.unread,
+        };
+      });
+      state.contacts = newContacts;
+    },
+    increaseUnreadBySessionId: (state, action) => {
+      const sessionId = action.payload;
+      const newContacts = state.contacts.map((c) => {
+        return {
+          ...c,
+          unread: c.id === sessionId ? c.unread + 1 : c.unread,
+        };
+      });
+      state.contacts = newContacts;
+    },
   },
   extraReducers: {
     [closeChatPanel]: (state, action) => {
@@ -26,7 +46,12 @@ const contactsSlice = createSlice({
   },
 });
 
-export const { setSelectedContactId, removeSelectedContactId, initContacts } =
-  contactsSlice.actions;
+export const {
+  setSelectedContactId,
+  removeSelectedContactId,
+  initContacts,
+  markAsReadBySessionId,
+  increaseUnreadBySessionId,
+} = contactsSlice.actions;
 
 export default contactsSlice.reducer;

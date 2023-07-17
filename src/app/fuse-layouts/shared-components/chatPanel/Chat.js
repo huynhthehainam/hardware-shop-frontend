@@ -10,7 +10,8 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import InputBase from '@mui/material/InputBase';
-import { sendMessage } from './store/chatSlice';
+import { setSignalRMessage } from 'app/store/signalRSlice';
+import { sendChatMessage } from './store/chatSlice';
 
 const StyledMessageRow = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -132,10 +133,10 @@ const StyledMessageRow = styled('div')(({ theme }) => ({
 
 function Chat(props) {
   const dispatch = useDispatch();
-  const contacts = useSelector(({ chatPanel }) => chatPanel.contacts.contacts);
+  const users = useSelector(({ chatPanel }) => chatPanel.users.users);
   const selectedContactId = useSelector(({ chatPanel }) => chatPanel.contacts.selectedContactId);
   const chat = useSelector(({ chatPanel }) => chatPanel.chat);
-  const user = useSelector(({ chatPanel }) => chatPanel.user);
+  const dialog = useSelector(({ chatPanel }) => chatPanel.dialog);
 
   const chatScroll = useRef(null);
   const [messageText, setMessageText] = useState('');
@@ -152,21 +153,36 @@ function Chat(props) {
     setMessageText(ev.target.value);
   };
 
+  const sendMessage = (chatSessionId, msg) => {
+    dispatch(
+      sendChatMessage({
+        who: user.id,
+        time: new Date(),
+        message: msg,
+      })
+    );
+    dispatch(
+      setSignalRMessage({
+        msgType: 'SendChatMessage',
+        msg: [chatSessionId, msg],
+      })
+    );
+  };
+
   const onMessageSubmit = (ev) => {
     ev.preventDefault();
     if (messageText === '') {
       return;
     }
-    dispatch(
-      sendMessage({
-        messageText,
-        chatId: chat.id,
-        contactId: selectedContactId,
-      })
-    ).then(() => {
-      setMessageText('');
-    });
+    sendMessage(selectedContactId, messageText);
+
+    setMessageText('');
   };
+  const user = useSelector(({ auth }) => {
+    return {
+      id: auth.user.data.guid,
+    };
+  });
 
   return (
     <Paper
@@ -176,7 +192,7 @@ function Chat(props) {
       {useMemo(() => {
         const shouldShowContactAvatar = (item, i) => {
           return (
-            item.who === selectedContactId &&
+            item.who !== user.id &&
             ((chat.dialog[i + 1] && chat.dialog[i + 1].who !== selectedContactId) ||
               !chat.dialog[i + 1])
           );
@@ -213,9 +229,7 @@ function Chat(props) {
               <div className="flex flex-col pt-16 ltr:pl-40 rtl:pr-40 pb-40">
                 {chat.dialog.map((item, i) => {
                   const contact =
-                    item.who === user.id
-                      ? user
-                      : contacts.find((_contact) => _contact.id === item.who);
+                    item.who === user.id ? user : users.find((u) => u.userGuid === item.who);
                   return (
                     <StyledMessageRow
                       key={item.time}
@@ -255,7 +269,7 @@ function Chat(props) {
             )}
           </FuseScrollbars>
         );
-      }, [chat, contacts, selectedContactId, user])}
+      }, [chat, users, selectedContactId, user])}
 
       {chat && (
         <form onSubmit={onMessageSubmit} className="pb-16 px-8 absolute bottom-0 left-0 right-0">

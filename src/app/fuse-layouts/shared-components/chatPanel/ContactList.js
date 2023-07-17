@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { memo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getChat } from './store/chatSlice';
+import { setSignalRMessage } from 'app/store/signalRSlice';
 import { openChatPanel } from './store/stateSlice';
 import ContactButton from './ContactButton';
 
@@ -17,9 +17,16 @@ function ContactList(props) {
   const selectedContactId = useSelector(({ chatPanel }) => chatPanel.contacts.selectedContactId);
   const contactListScroll = useRef(null);
 
-  const handleContactClick = (contactId) => {
+  const handleContactClick = (affectedUserIds) => {
+    console.log('handle click', affectedUserIds);
     dispatch(openChatPanel());
-    dispatch(getChat({ contactId }));
+    dispatch(
+      setSignalRMessage({
+        msgType: 'JoinChatSession',
+        msg: [affectedUserIds],
+      })
+    );
+
     scrollToTop();
   };
 
@@ -47,26 +54,24 @@ function ContactList(props) {
       option={{ suppressScrollX: true, wheelPropagation: false }}
     >
       {contacts.length > 0 && (
-        <>
-          <motion.div
-            variants={container}
-            initial="hidden"
-            animate="show"
-            className="flex flex-col flex-shrink-0"
-          >
-            {contacts.map((contact) => {
-              return (
-                <motion.div variants={item} key={contact.id}>
-                  <ContactButton
-                    contact={contact}
-                    selectedContactId={selectedContactId}
-                    onClick={handleContactClick}
-                  />
-                </motion.div>
-              );
-            })}
-          </motion.div>
-        </>
+        <motion.div
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="flex flex-col flex-shrink-0"
+        >
+          {contacts.map((contact, index) => {
+            return (
+              <motion.div variants={item} key={index}>
+                <ContactButton
+                  contact={contact}
+                  selectedContactId={selectedContactId}
+                  onClick={handleContactClick}
+                />
+              </motion.div>
+            );
+          })}
+        </motion.div>
       )}
     </Root>
   );
