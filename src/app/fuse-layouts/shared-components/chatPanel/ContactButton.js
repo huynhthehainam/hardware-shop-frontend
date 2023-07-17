@@ -73,7 +73,9 @@ const ContactButton = ({ contact, selectedContactId, onClick }) => {
   return (
     <Root title={contact.name} placement="left" active={selectedContactId === contact.id ? 1 : 0}>
       <Button
-        onClick={() => onClick(contact.id)}
+        onClick={() => {
+          onClick(contact.affectedUserIds);
+        }}
         className={clsx('contactButton', selectedContactId === contact.id && 'active')}
       >
         {contact.unread && <StyledUreadBadge>{contact.unread}</StyledUreadBadge>}
